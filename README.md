@@ -79,8 +79,8 @@ root
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 
-JWT_ACCESS_SECRET=your_access_secret
-JWT_REFRESH_SECRET=your_refresh_secret
+JWT_SECRET_KEY=your_jwt_secret_key
+
 
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
