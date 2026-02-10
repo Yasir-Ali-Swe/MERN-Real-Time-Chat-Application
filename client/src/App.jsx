@@ -21,10 +21,10 @@ const App = () => {
         Welcome to the Chat App
       </h1>
       <div className="my-2 flex gap-3">
-        <button onClick={showToast} className="btn btn-neutral">
+        <button onClick={showToast} className="btn btn-dash btn-neutral">
           Neutral
         </button>
-        <button className="btn btn-primary">Primary</button>
+        <button className="btn btn-dash btn-primary">Primary</button>
         <button className="btn btn-secondary">Secondary</button>
         <button className="btn btn-accent">Accent</button>
         <button className="btn btn-info">Info</button>
