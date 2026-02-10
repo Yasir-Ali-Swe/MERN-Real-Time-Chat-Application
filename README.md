@@ -7,6 +7,7 @@ This project is built as a portfolio project with production-style patterns and 
 ## Tech Stack
 
 ### Frontend
+
 - React
 - Tailwind CSS
 - DaisyUI
@@ -14,6 +15,7 @@ This project is built as a portfolio project with production-style patterns and 
 - Axios
 
 ### Backend
+
 - Node.js
 - Express.js
 - MongoDB
@@ -25,6 +27,7 @@ This project is built as a portfolio project with production-style patterns and 
 ## Features
 
 ### Authentication
+
 - User registration
 - Email verification
 - Login and logout
@@ -33,40 +36,46 @@ This project is built as a portfolio project with production-style patterns and 
 - Protected routes
 
 ### Chat
+
 - Real-time messaging using Socket.IO
 - One-to-one chat
 - Online users indicator
 - Message persistence in database
 
 ### User Profile
+
 - Complete profile after registration
 - Upload profile image using Cloudinary
 - Public user profiles
 
 ### Media
+
 - Image upload in chat messages
 - Cloudinary integration for secure media storage
 
 ## Project Structure
 
+```text
 root
-├── client # React frontend
-│ ├── src
-│ ├── components
-│ ├── store # Zustand stores
-│ └── pages
-├── server # Node.js backend
-│ ├── controllers
-│ ├── routes
-│ ├── models
-│ ├── middleware
-│ └── socket
+├── client
+│   ├── src
+│   ├── components
+│   ├── store
+│   └── pages
+├── server
+│   ├── controllers
+│   ├── routes
+│   ├── models
+│   ├── middleware
+│   └── socket
 └── README.md
-
+```
 
 ## Environment Variables
 
 ### Backend (`server/.env`)
+
+```env
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 
@@ -78,34 +87,36 @@ CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 
 CLIENT_URL=http://localhost:3000
-
+```
 
 ### Frontend (`client/.env`)
-VITE_API_URL=http://localhost:5000/api
 
+```env
+VITE_API_URL=http://localhost:5000/api
+```
 
 ## Installation and Setup
 
-### Clone the repository
-git clone https://github.com/your-username/mern-chat-app.git
-cd mern-chat-app
-
-
 ### Backend setup
+
+```bash
 cd server
 npm install
 npm run dev
-
+```
 
 ### Frontend setup
+
+```bash
 cd client
 npm install
 npm run dev
-
+```
 
 The app should now be running on:
-- Frontend: `http://localhost:3000`
-- Backend: `http://localhost:5000`
+
+- Frontend: http://localhost:3000
+- Backend: http://localhost:5000
 
 ## Socket.IO Flow
 
@@ -121,7 +132,7 @@ The app should now be running on:
 
 - Passwords are hashed before storage
 - Access tokens are short-lived
-- Refresh tokens are stored securely and rotated
+- Refresh tokens are securely stored and rotated
 - Protected routes use authentication middleware
 
 ## Future Improvements
@@ -145,4 +156,3 @@ This project is free to use and open-source.
 
 Yasir Ali  
 Feel free to fork, use, and improve this project.
-give me all content in one editor 
