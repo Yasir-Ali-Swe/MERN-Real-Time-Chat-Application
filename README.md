@@ -143,10 +143,10 @@ The app should now be running on:
 - Typing indicators
 - Pagination for chat messages
 - Push notifications
-
+<!-- 
 ## Screenshots
 
-_Add screenshots here_
+_Add screenshots here_ -->
 
 ## License
 
