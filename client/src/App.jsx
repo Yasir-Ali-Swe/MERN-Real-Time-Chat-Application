@@ -18,14 +18,14 @@ const App = () => {
     toast.error("This is an error toast!");
   };
   const warningToast = () => {
-    toast(
+    toast((t) => (
       <div className="text-yellow-800 rounded flex justify-between items-center gap-10">
         <p>⚠️ This is a warning toast!</p>
-        <button onClick={(t) => toast.dismiss(t.id)} className="cursor-pointer bg-red-500 text-white rounded-full p-0.5 text-center">
+        <button onClick={() => toast.dismiss(t.id)} className="cursor-pointer bg-red-500 text-white rounded-full p-0.5 text-center">
           <X className="size-5 font-black"/>
         </button>
-      </div>,
-    );
+      </div>
+    ));
   };
 
   return (
