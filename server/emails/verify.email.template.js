@@ -1,5 +1,6 @@
-export const verifyEmailTemplate = ({ name, token, expireIn }) => {
-  return `
+import { CLIENT_URL } from "../config/env.js";
+
+export const verifyEmailTemplate = ({ name, token, expireIn }) => `
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -45,27 +46,6 @@ export const verifyEmailTemplate = ({ name, token, expireIn }) => {
         line-height: 1.6;
       }
 
-      .email-body h2 {
-        margin-top: 0;
-        font-size: 18px;
-        color: #111827;
-      }
-
-      .verify-button {
-        display: inline-block;
-        margin: 24px 0;
-        padding: 12px 20px;
-        background-color: #2563eb;
-        color: #ffffff;
-        text-decoration: none;
-        border-radius: 4px;
-        font-weight: bold;
-      }
-
-      .verify-button:hover {
-        background-color: #1d4ed8;
-      }
-
       .email-footer {
         padding: 16px 24px;
         font-size: 12px;
@@ -77,6 +57,7 @@ export const verifyEmailTemplate = ({ name, token, expireIn }) => {
       .email-footer a {
         color: #2563eb;
         text-decoration: none;
+        word-break: break-all;
       }
     </style>
   </head>
@@ -88,51 +69,56 @@ export const verifyEmailTemplate = ({ name, token, expireIn }) => {
         </div>
 
         <div class="email-body">
-          <h2>Verify your email address</h2>
+          <h2 style="margin:0 0 12px 0; font-size:18px; color:#111827;">
+            Verify your email address
+          </h2>
 
-          <p>
+          <p style="margin:0 0 12px 0;">
             Hi ${name},
           </p>
 
-          <p>
+          <p style="margin:0 0 20px 0;">
             Thanks for signing up. Please confirm your email address by clicking
             the button below.
           </p>
 
-          <p style="text-align: center;">
-            <a href="http://localhost:3000/verify-email/${token}" class="verify-button"
+          <p style="text-align:center; margin:24px 0;">
+            <a
+              href="${CLIENT_URL}/verify-email/${token}"
               style="
-              background-color:#2563eb;
-              color:#ffffff;
-              display:inline-block;
-              text-decoration:none;
-              padding:12px 20px;
-              border-radius:4px;
-              font-weight:bold;">
+                background-color:#2563eb;
+                color:#ffffff;
+                display:inline-block;
+                text-decoration:none;
+                padding:12px 20px;
+                border-radius:4px;
+                font-weight:bold;
+              "
+            >
               Verify Email
             </a>
           </p>
 
-          <p>
+          <p style="margin:20px 0 12px 0;">
             If you didn’t create this account, you can safely ignore this email.
           </p>
 
-          <p>
+          <p style="margin:0;">
             This link will expire in ${expireIn}.
           </p>
         </div>
 
         <div class="email-footer">
-          <p>
+          <p style="margin:0 0 8px 0;">
             If the button doesn’t work, copy and paste this link into your
             browser:
           </p>
-          <p>
-            <a href="http://localhost:3000/verify-email/${token}">
-              http://localhost:3000/verify-email/${token}
+          <p style="margin:0 0 12px 0;">
+            <a href="${CLIENT_URL}/verify-email/${token}">
+              ${CLIENT_URL}/verify-email/${token}
             </a>
           </p>
-          <p>
+          <p style="margin:0;">
             © 2026 NexTalk. All rights reserved.
           </p>
         </div>
@@ -141,4 +127,3 @@ export const verifyEmailTemplate = ({ name, token, expireIn }) => {
   </body>
 </html>
 `;
-};
