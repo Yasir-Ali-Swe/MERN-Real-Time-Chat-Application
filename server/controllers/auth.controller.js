@@ -167,7 +167,7 @@ export const getMe = async (req, res) => {
     const { id } = await getUserFromToken(token);
     const user = await userModel
       .findById(id)
-      .select("-password -tokenVersion -__v -createdAt -updatedAt");
+      .select("-password -__v -tokenVersion -createdAt -updatedAt");
     if (!user) {
       return res
         .status(404)
