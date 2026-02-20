@@ -25,6 +25,8 @@ export const register = async (req, res) => {
         email,
         token,
         expireIn: "15 minutes",
+        subject: "Resend Verification Email",
+        purpose: 1, // Indicate that this is for email verification
       });
       return res
         .status(200)
@@ -38,7 +40,13 @@ export const register = async (req, res) => {
     });
     await newUser.save();
     const token = generateToken(newUser._id, "15m");
-    await sendVerificationEmail({ name: fullName, email, token });
+    await sendVerificationEmail({
+      name: fullName,
+      email,
+      token,
+      subject: "Verify Your Email Address",
+      purpose: 1, // Indicate that this is for email verification
+    });
     res.status(201).json({
       success: true,
       message: "User registered. Please verify your email.",
@@ -148,6 +156,42 @@ export const refreshAuthToken = async (req, res) => {
       success: true,
       message: "Token refreshed successfully",
       accessToken: newAccessToken,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
+  }
+};
+
+export const sendForgetPasswordEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    const token = generateToken(user._id, "15m", user.tokenVersion);
+    await sendVerificationEmail({
+      name: user.fullName,
+      email,
+      token,
+      expireIn: "15 minutes",
+      subject: "Reset Your Password",
+      purpose: 2, // Indicate that this is for password reset
+    });
+    res.status(200).json({
+      success: true,
+      message: "Password reset email sent. Please check your inbox.",
     });
   } catch (error) {
     res
