@@ -115,3 +115,20 @@ export const login = async (req, res) => {
       .json({ success: false, message: "Server error", error: error.message });
   }
 };
+
+export const logout = async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No active session found" });
+    }
+    res.clearCookie("refreshToken");
+    res.status(200).json({ success: true, message: "Logged out successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
+  }
+};
