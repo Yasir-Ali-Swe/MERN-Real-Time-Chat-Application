@@ -96,7 +96,7 @@ export const login = async (req, res) => {
     if (!user) {
       return res
         .status(400)
-        .json({ success: false, message: "Invalid email or password" });
+        .json({ success: false, message: "Invalid credentials" });
     }
     const isPasswordValid = await comparePassword(password, user.password);
     if (!isPasswordValid) {
@@ -192,6 +192,56 @@ export const sendForgetPasswordEmail = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Password reset email sent. Please check your inbox.",
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
+  }
+};
+
+export const verifyForgetPasswordToken = async (req, res) => {
+  try {
+    const { token } = req.params;
+    if (!token) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Verification token is required" });
+    }
+    const user = await getUserFromToken(token);
+    res.status(200).json({
+      success: true,
+      message: "Token is valid",
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { password } = req.body;
+    const { token } = req.params;
+    if (!password) {
+      return res.status(400).json({
+        success: false,
+        message: "Password is required",
+      });
+    }
+    if (!token) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Verification token is required" });
+    }
+    const user = await getUserFromToken(token);
+    user.password = await hashPassword(password);
+    user.tokenVersion += 1; // Invalidate all existing tokens
+    await user.save();
+    res.status(200).json({
+      success: true,
+      message: "Password reset successfully",
     });
   } catch (error) {
     res
