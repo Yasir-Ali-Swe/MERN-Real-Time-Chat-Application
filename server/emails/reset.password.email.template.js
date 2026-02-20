@@ -1,6 +1,5 @@
-export const forgotPasswordTemplate = ({
-  name,token
-}) => `
+import { CLIENT_URL } from "../config/env.js";
+export const forgotPasswordTemplate = ({ name, token, expireIn }) => `
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -52,21 +51,6 @@ export const forgotPasswordTemplate = ({
         color: #111827;
       }
 
-      .reset-button {
-        display: inline-block;
-        margin: 24px 0;
-        padding: 12px 20px;
-        background-color: #dc2626;
-        color: #ffffff;
-        text-decoration: none;
-        border-radius: 4px;
-        font-weight: bold;
-      }
-
-      .reset-button:hover {
-        background-color: #b91c1c;
-      }
-
       .email-footer {
         padding: 16px 24px;
         font-size: 12px;
@@ -85,15 +69,13 @@ export const forgotPasswordTemplate = ({
     <div class="email-wrapper">
       <div class="email-container">
         <div class="email-header">
-          <h1>Your App Name</h1>
+          <h1>NexTalk</h1>
         </div>
 
         <div class="email-body">
           <h2>Reset your password</h2>
 
-          <p>
-            Hi ${name},
-          </p>
+          <p>Hi ${name},</p>
 
           <p>
             We received a request to reset your password. Click the button below
@@ -101,7 +83,18 @@ export const forgotPasswordTemplate = ({
           </p>
 
           <p style="text-align: center;">
-            <a href="http://localhost:3000/reset-password/${token}" class="reset-button">
+            <a
+              href="${CLIENT_URL}/reset-password/${token}"
+              style="
+                background-color:#dc2626;
+                color:#ffffff;
+                display:inline-block;
+                text-decoration:none;
+                padding:12px 20px;
+                border-radius:4px;
+                font-weight:bold;
+              "
+            >
               Reset Password
             </a>
           </p>
@@ -112,7 +105,7 @@ export const forgotPasswordTemplate = ({
           </p>
 
           <p>
-            This link will expire in {{expiry_time}}.
+            This link will expire in ${expireIn}.
           </p>
         </div>
 
@@ -122,12 +115,12 @@ export const forgotPasswordTemplate = ({
             browser:
           </p>
           <p>
-            <a href="http://localhost:3000/reset-password/${token}">
-              http://localhost:3000/reset-password/${token}
+            <a href="${CLIENT_URL}/reset-password/${token}">
+              ${CLIENT_URL}/reset-password/${token}
             </a>
           </p>
           <p>
-            © 2026 Your App Name. All rights reserved.
+            © 2026 NexTalk. All rights reserved.
           </p>
         </div>
       </div>
