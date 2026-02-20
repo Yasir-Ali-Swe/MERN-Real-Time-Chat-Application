@@ -1,21 +1,26 @@
 import nodemailer from "nodemailer";
-import { Email, EMAIL_PASSWORD } from "../config.js";
+import { EMAIL, EMAIL_PASSWORD } from "../config/env.js";
 import { verifyEmailTemplate } from "../emails/verify.email.template.js";
 
-export const sendVerificationEmail = async ({ name, email, token }) => {
+export const sendVerificationEmail = async ({
+  name,
+  email,
+  token,
+  expireIn,
+}) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: Email,
+      user: EMAIL,
       pass: EMAIL_PASSWORD,
     },
   });
 
   const mailOptions = {
-    from: Email,
+    from: EMAIL,
     to: email,
     subject: "Verify Your Email Address",
-    html: verifyEmailTemplate({ name, token }),
+    html: verifyEmailTemplate({ name, token, expireIn }),
   };
 
   try {
@@ -25,5 +30,3 @@ export const sendVerificationEmail = async ({ name, email, token }) => {
     console.error(`Error sending verification email to ${email}:`, error);
   }
 };
-
-
