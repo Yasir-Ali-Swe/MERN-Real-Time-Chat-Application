@@ -1,7 +1,7 @@
 import userModel from "../models/user.model.js";
 import { sendVerificationEmail } from "../utils/verify.email.js";
 import { generateToken } from "../utils/jwt.helper.js";
-import { hashPassword } from "../utils/password.helper.js";
+import { hashPassword, comparePassword } from "../utils/password.helper.js";
 import { getUserFromToken } from "../utils/jwt.helper.js";
 
 export const register = async (req, res) => {
@@ -69,6 +69,46 @@ export const verifyEmail = async (req, res) => {
     res
       .status(200)
       .json({ success: true, message: "Email verified successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
+  }
+};
+
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email and password are required" });
+    }
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid email or password" });
+    }
+    const isPasswordValid = await comparePassword(password, user.password);
+    if (!isPasswordValid) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid email or password" });
+    }
+    const accessToken = generateToken(user._id, "1h", user.tokenVersion);
+    const refreshToken = generateToken(user._id, "7d", user.tokenVersion);
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false, // Set to true in production with HTTPS
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      accessToken,
+    });
   } catch (error) {
     res
       .status(500)
