@@ -1,4 +1,4 @@
-export const verifyEmailTemplate = ({ name, token }) => {
+export const verifyEmailTemplate = ({ name, token, expireIn }) => {
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -84,7 +84,7 @@ export const verifyEmailTemplate = ({ name, token }) => {
     <div class="email-wrapper">
       <div class="email-container">
         <div class="email-header">
-          <h1>Your App Name</h1>
+          <h1>NexTalk</h1>
         </div>
 
         <div class="email-body">
@@ -100,7 +100,15 @@ export const verifyEmailTemplate = ({ name, token }) => {
           </p>
 
           <p style="text-align: center;">
-            <a href="http://localhost:3000/verify-email/${token}" class="verify-button">
+            <a href="http://localhost:3000/verify-email/${token}" class="verify-button"
+              style="
+              background-color:#2563eb;
+              color:#ffffff;
+              display:inline-block;
+              text-decoration:none;
+              padding:12px 20px;
+              border-radius:4px;
+              font-weight:bold;">
               Verify Email
             </a>
           </p>
@@ -110,7 +118,7 @@ export const verifyEmailTemplate = ({ name, token }) => {
           </p>
 
           <p>
-            This link will expire in {{expiry_time}}.
+            This link will expire in ${expireIn}.
           </p>
         </div>
 
@@ -125,7 +133,7 @@ export const verifyEmailTemplate = ({ name, token }) => {
             </a>
           </p>
           <p>
-            © 2026 Your App Name. All rights reserved.
+            © 2026 NexTalk. All rights reserved.
           </p>
         </div>
       </div>
