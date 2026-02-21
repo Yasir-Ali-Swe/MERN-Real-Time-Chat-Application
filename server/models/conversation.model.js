@@ -10,13 +10,13 @@ const conversationSchema = new mongoose.Schema(
           required: true,
         },
       ],
+      required: true,
       validate: {
         validator: function (value) {
           return value.length === 2;
         },
         message: "Direct conversation must have exactly 2 participants",
       },
-      required: true,
     },
   },
   { timestamps: true },
@@ -24,4 +24,5 @@ const conversationSchema = new mongoose.Schema(
 
 conversationSchema.index({ participants: 1 }, { unique: true });
 
-export default mongoose.model("Conversation", conversationSchema);
+const Conversation = mongoose.model("Conversation", conversationSchema);
+export default Conversation;
