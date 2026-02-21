@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import { X } from "lucide-react";
-
+import { Button } from "./components/ui/button";
 const App = () => {
   const successToast = () => {
     toast.success("This is a success toast!");
@@ -23,25 +23,17 @@ const App = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen w-screen bg-gray-300">
-      <h1 className="text-3xl text-red-500 underline font-bold">
+    <div className="flex flex-col justify-center items-center h-screen w-screen bg-muted-foreground">
+      <h1 className="text-3xl text-destructive underline font-bold">
         Welcome to the Chat App
       </h1>
       <div className="my-2 flex gap-3">
-        <button className="">Neutral</button>
-        <button className="">Primary</button>
-        <button className="">Secondary</button>
-        <button className="">Accent</button>
-        <button className="">Info</button>
-        <button onClick={successToast} className="">
-          Success
-        </button>
-        <button onClick={warningToast} className="">
-          Warning
-        </button>
-        <button onClick={errorToast} className="">
-          Error
-        </button>
+        <Button variant="default" onClick={successToast}>Success</Button>
+        <Button variant="destructive" onClick={errorToast}>Error</Button>
+        <Button variant="outline" onClick={warningToast}>Warning</Button>
+        <Button variant="secondary">Secondary</Button>
+        <Button variant="ghost">Ghost</Button>
+        <Button variant="link">Link</Button>
       </div>
     </div>
   );
