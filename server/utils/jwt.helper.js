@@ -23,7 +23,7 @@ export const getUserFromToken = async (token) => {
       throw err;
     }
     if (user.tokenVersion !== decoded.tokenVersion) {
-      const err = new Error("Token has been revoked");
+      const err = new Error("Not authorized, token has been revoked");
       err.status = 401;
       throw err;
     }
