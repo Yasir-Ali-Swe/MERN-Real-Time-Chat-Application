@@ -28,17 +28,45 @@ export const sendMessage = async (req, res) => {
       text,
       image,
     });
-console.log("Created message object:", message);
+    console.log("Created message object:", message);
     await message.save();
     return res.status(201).json({
       success: true,
       message: "Message created successfully",
     });
   } catch (error) {
-    console.error("SendMessage Error:", error);
     return res.status(500).json({
       success: false,
       message: "Failed to create message",
+      error: error.message,
+    });
+  }
+};
+
+export const getConversation = async (req, res) => {
+  try {
+    const conversationId = req.params.conversationId;
+    if (!conversationId) {
+      return res.status(400).json({
+        success: false,
+        message: "Conversation ID is required",
+      });
+    }
+    const messages = await messagesModel.find({ conversationId }).select("-__v -createdAt -updatedAt").sort({ createdAt: 1 });
+    if (messages.length === 0) {
+      res.status(404).json({
+        success: false,
+        message: "No messages found for this conversation",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      messages,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
       error: error.message,
     });
   }
