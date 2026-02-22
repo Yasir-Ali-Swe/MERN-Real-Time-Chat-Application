@@ -5,12 +5,17 @@ import { Toaster } from "react-hot-toast";
 import { BrowserRouter } from "react-router-dom";
 import Store from "@/store/store";
 import { Provider } from "react-redux";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")).render(
   <Provider store={Store}>
     <BrowserRouter>
-      <App />
-      <Toaster position="top-right" reverseOrder={false} />
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
+      <Toaster position="top-center" reverseOrder={false} />
     </BrowserRouter>
   </Provider>,
 );
