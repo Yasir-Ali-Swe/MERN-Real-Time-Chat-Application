@@ -84,7 +84,7 @@ export const verifyEmailTemplate = ({ name, token, expireIn }) => `
 
           <p style="text-align:center; margin:24px 0;">
             <a
-              href="${CLIENT_URL}/verify-email/${token}"
+              href="${CLIENT_URL}/auth/verify-email/${token}"
               style="
                 background-color:#2563eb;
                 color:#ffffff;
@@ -114,8 +114,8 @@ export const verifyEmailTemplate = ({ name, token, expireIn }) => `
             browser:
           </p>
           <p style="margin:0 0 12px 0;">
-            <a href="${CLIENT_URL}/verify-email/${token}">
-              ${CLIENT_URL}/verify-email/${token}
+            <a href="${CLIENT_URL}/auth/verify-email/${token}">
+              ${CLIENT_URL}/auth/verify-email/${token}
             </a>
           </p>
           <p style="margin:0;">
