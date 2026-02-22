@@ -84,7 +84,7 @@ export const forgotPasswordTemplate = ({ name, token, expireIn }) => `
 
           <p style="text-align: center;">
             <a
-              href="${CLIENT_URL}/reset-password/${token}"
+              href="${CLIENT_URL}/auth/reset-password/${token}"
               style="
                 background-color:#dc2626;
                 color:#ffffff;
@@ -115,8 +115,8 @@ export const forgotPasswordTemplate = ({ name, token, expireIn }) => `
             browser:
           </p>
           <p>
-            <a href="${CLIENT_URL}/reset-password/${token}">
-              ${CLIENT_URL}/reset-password/${token}
+            <a href="${CLIENT_URL}/auth/reset-password/${token}">
+              ${CLIENT_URL}/auth/reset-password/${token}
             </a>
           </p>
           <p>
