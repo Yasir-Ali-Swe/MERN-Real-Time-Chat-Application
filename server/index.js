@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "*",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   }),
@@ -24,4 +24,3 @@ app.listen(PORT, async () => {
   console.log("Server is running on port 5000");
   await connectDB();
 });
-
