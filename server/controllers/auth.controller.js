@@ -69,7 +69,7 @@ export const verifyEmail = async (req, res) => {
     const user = await getUserFromToken(token);
     if (user.isVerified) {
       return res
-        .status(400)
+        .status(200)
         .json({ success: false, message: "Email is already verified" });
     }
     user.isVerified = true;
@@ -246,7 +246,7 @@ export const resetPassword = async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ success: false, message: "Server error", error: error.message });
+      .json({ success: false, message: error.message, error: error.message });
   }
 };
 
