@@ -12,27 +12,45 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { MessageCircleMore, Eye, EyeOff, Mail } from "lucide-react";
+import { MessageCircleMore, Eye, EyeOff, Mail, Loader } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { useMutation } from "@tanstack/react-query";
+import { login } from "../lib/auth-api";
+import { setAccessToken } from "@/features/auth/auth-slice";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
-const login = () => {
+const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
   const [showPassword, setShowPassword] = useState(false);
-
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+  const { mutate, isPending } = useMutation({
+    mutationFn: login,
+    onSuccess: (response) => {
+      toast.success(response.data.message || "Login successful!");
+      setFormData({ email: "", password: "" });
+      const { accessToken } = response.data;
+      dispatch(setAccessToken(accessToken));
+      navigate("/");
+    },
+    onError: (error) => {
+      console.error("Login failed:", error);
+      toast.error(error.response.data?.message || "Login failed!");
+    },
+  });
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    mutate(formData);
   };
 
   return (
@@ -94,8 +112,23 @@ const login = () => {
                 )}
               </div>
             </div>
-            <Button type="submit" className={"w-full my-3 rounded-xs cursor-pointer"}>
-              Login
+            <div>
+              <Link
+                to="/auth/forgot-password-request"
+                className="text-sm font-semibold text-primary hover:underline"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+            <Button
+              type="submit"
+              className={"w-full my-3 rounded-xs cursor-pointer"}
+            >
+              {isPending ? (
+                <Loader className="size-3 animate-spin text-white" />
+              ) : (
+                "Login"
+              )}
             </Button>
           </form>
         </CardContent>
@@ -112,4 +145,4 @@ const login = () => {
   );
 };
 
-export default login;
+export default Login;
