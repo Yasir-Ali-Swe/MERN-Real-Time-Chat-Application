@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { MessageCircleMore, Eye, EyeOff } from "lucide-react";
+import { MessageCircleMore, Eye, EyeOff, Mail } from "lucide-react";
 
 const login = () => {
   const [formData, setFormData] = useState({
@@ -38,17 +38,17 @@ const login = () => {
   return (
     <div className="flex flex-col justify-center items-center h-screen w-screen px-3 lg:p-0">
       <div className="my-5 flex items-center justify-center gap-3">
-        <h1 className="text-3xl font-bold">NextTalk</h1>
+        <h1 className="text-3xl font-bold">NexTalk</h1>
         <MessageCircleMore className="size-9" />
       </div>
-      <Card className={"w-full max-w-xs md:max-w-sm lg:max-w-md rounded-sm"}>
+      <Card className={"w-full max-w-xs md:max-w-sm lg:max-w-md rounded-xs"}>
         <CardHeader>
           <CardTitle className={"text-xl"}>Login</CardTitle>
           <CardDescription>Enter your credentials to login</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
-            <div className="space-y-1 mb-3">
+            <div className="space-y-1 mb-3 relative">
               <Label htmlFor="email" className={"text-md"}>
                 Email
               </Label>
@@ -57,9 +57,15 @@ const login = () => {
                 name="email"
                 type="email"
                 placeholder="Enter your email"
+                className={"rounded-xs"}
                 value={formData.email}
                 onChange={handleChange}
               />
+              <div className="absolute right-3 top-9">
+                <label htmlFor="email">
+                  <Mail className="size-5 text-primary cursor-pointer" />
+                </label>
+              </div>
             </div>
             <div className="space-y-1 my-3 relative">
               <Label htmlFor="password" className={"text-md"}>
@@ -71,6 +77,7 @@ const login = () => {
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 value={formData.password}
+                className={"rounded-xs"}
                 onChange={handleChange}
               />
               <div className="absolute right-3 top-9">
@@ -87,7 +94,7 @@ const login = () => {
                 )}
               </div>
             </div>
-            <Button type="submit" className={"w-full my-3"}>
+            <Button type="submit" className={"w-full my-3 rounded-xs cursor-pointer"}>
               Login
             </Button>
           </form>
