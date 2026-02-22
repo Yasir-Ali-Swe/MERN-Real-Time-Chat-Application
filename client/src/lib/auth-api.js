@@ -15,10 +15,8 @@ export const verifyEmail = async (token) => {
   return response.data;
 };
 
-export const sendForgetPasswordEmail = async (email) => {
-  const response = await api.post("/auth/send-forgot-password-email", {
-    email,
-  });
+export const sendForgetPasswordEmail = async (data) => {
+  const response = await api.post("/auth/send-forgot-password-email", data);
   return response.data;
 };
 
@@ -29,9 +27,9 @@ export const verifyForgetPasswordToken = async (token) => {
   return response.data;
 };
 
-export const resetPassword = async (token, newPassword) => {
+export const resetPassword = async (password, token) => {
   const response = await api.post(`/auth/reset-password/${token}`, {
-    newPassword,
+    password,
   });
   return response.data;
 };
