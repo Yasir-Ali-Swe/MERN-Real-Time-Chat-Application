@@ -11,7 +11,7 @@ const LoadingUI = ({ children }) => {
 
   return (
     <div className="flex items-center justify-center h-screen">
-      <Loader className="size-8 font-semibold animate-spin" />
+      <Loader className="size-8 font-black animate-spin" />
     </div>
   );
 };
