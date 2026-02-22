@@ -9,24 +9,27 @@ import Chat from "./pages/chat";
 import useAuth from "./features/auth/use-auth";
 import LoadingUI from "./components/loading-ui";
 import ProtectedRoutes from "./routes/protected-routes";
+import AuthRoutes from "./routes/auth-routes";
 
 const App = () => {
   useAuth();
   return (
     <div>
       <LoadingUI>
-        <Routes>
-          <Route path="/auth/login" element={<Login />} />
-          <Route path="/auth/register" element={<Register />} />
-          <Route
-            path="/auth/forgot-password-request"
-            element={<ForgetPasswordRequest />}
-          />
-          <Route
-            path="/auth/reset-password/:token"
-            element={<ResetPassword />}
-          />
-          <Route path="/auth/verify-email/:token" element={<VerifyEmail />} />
+        <Routes path="/auth/*" element={<AuthRoutes />}>
+          <Route element={<AuthRoutes />}>
+            <Route path="/auth/login" element={<Login />} />
+            <Route path="/auth/register" element={<Register />} />
+            <Route
+              path="/auth/forgot-password-request"
+              element={<ForgetPasswordRequest />}
+            />
+            <Route
+              path="/auth/reset-password/:token"
+              element={<ResetPassword />}
+            />
+            <Route path="/auth/verify-email/:token" element={<VerifyEmail />} />
+          </Route>
           <Route path="/" element={<ProtectedRoutes />}>
             <Route path="/" element={<Chat />} />
           </Route>
