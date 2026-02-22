@@ -19,6 +19,10 @@ import {
   SquareUserRound,
   Mail,
 } from "lucide-react";
+import { Loader } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { register } from "../lib/auth-api";
+import { toast } from "react-hot-toast";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -26,20 +30,27 @@ const Register = () => {
     email: "",
     password: "",
   });
-
   const [showPassword, setShowPassword] = useState(false);
-
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+  const { mutate, isPending } = useMutation({
+    mutationFn: register,
+    onSuccess: (response) => {
+      toast.success(response.data.message || "Registration successful!");
+      setFormData({ fullName: "", email: "", password: "" });
+    },
+    onError: (error) => {
+      console.error("Registration failed:", error);
+      toast.error(error.response.data?.message || "Registration failed!");
+    },
+  });
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    mutate(formData);
   };
 
   return (
@@ -120,8 +131,15 @@ const Register = () => {
                 )}
               </div>
             </div>
-            <Button type="submit" className={"w-full my-3 rounded-xs cursor-pointer"}>
-              Register
+            <Button
+              type="submit"
+              className={"w-full my-3 rounded-xs cursor-pointer"}
+            >
+              {isPending ? (
+                <Loader className="size-3 font-semibold animate-spin" />
+              ) : (
+                "Register"
+              )}
             </Button>
           </form>
         </CardContent>
