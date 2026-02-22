@@ -16,6 +16,7 @@ import { Loader } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { sendForgetPasswordEmail } from "../lib/auth-api";
 import { toast } from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 const forgetPasswordRequest = () => {
   const [formData, setFormData] = useState({
@@ -74,6 +75,14 @@ const forgetPasswordRequest = () => {
                   <Mail className="size-5 text-primary cursor-pointer" />
                 </Label>
               </div>
+            </div>
+            <div>
+              <Link
+                to="/auth/login"
+                className="text-sm font-semibold text-primary hover:underline"
+              >
+                Back to Login
+              </Link>
             </div>
             <Button
               type="submit"
