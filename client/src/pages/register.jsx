@@ -12,7 +12,13 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { MessageCircleMore, Eye, EyeOff ,SquareUserRound,Mail} from "lucide-react";
+import {
+  MessageCircleMore,
+  Eye,
+  EyeOff,
+  SquareUserRound,
+  Mail,
+} from "lucide-react";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -39,10 +45,10 @@ const Register = () => {
   return (
     <div className="flex flex-col justify-center items-center h-screen w-screen px-3 lg:p-0">
       <div className="my-5 flex items-center justify-center gap-3">
-        <h1 className="text-3xl font-bold">NextTalk</h1>
+        <h1 className="text-3xl font-bold">NexTalk</h1>
         <MessageCircleMore className="size-9" />
       </div>
-      <Card className={"w-full max-w-xs md:max-w-sm lg:max-w-md rounded-sm"}>
+      <Card className={"w-full max-w-xs md:max-w-sm lg:max-w-md rounded-xs"}>
         <CardHeader>
           <CardTitle className={"text-xl"}>Register</CardTitle>
           <CardDescription>Enter your credentials to register</CardDescription>
@@ -57,12 +63,15 @@ const Register = () => {
                 id="fullName"
                 name="fullName"
                 type="text"
+                className={"rounded-xs"}
                 placeholder="Enter your full name"
                 value={formData.fullName}
                 onChange={handleChange}
               />
               <div className="absolute right-3 top-9">
-                <SquareUserRound className="size-5 text-primary cursor-pointer" />
+                <Label htmlFor="fullName">
+                  <SquareUserRound className="size-5 text-primary cursor-pointer" />
+                </Label>
               </div>
             </div>
             <div className="space-y-1 my-3 relative">
@@ -74,11 +83,14 @@ const Register = () => {
                 name="email"
                 type="email"
                 placeholder="Enter your email"
+                className={"rounded-xs"}
                 value={formData.email}
                 onChange={handleChange}
               />
               <div className="absolute right-3 top-9">
-                <Mail className="size-5 text-primary cursor-pointer" />
+                <Label htmlFor="email">
+                  <Mail className="size-5 text-primary cursor-pointer" />
+                </Label>
               </div>
             </div>
             <div className="space-y-1 my-3 relative">
@@ -89,6 +101,7 @@ const Register = () => {
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
+                className={"rounded-xs"}
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={handleChange}
@@ -107,7 +120,7 @@ const Register = () => {
                 )}
               </div>
             </div>
-            <Button type="submit" className={"w-full my-3"}>
+            <Button type="submit" className={"w-full my-3 rounded-xs cursor-pointer"}>
               Register
             </Button>
           </form>
