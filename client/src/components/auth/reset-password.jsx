@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { MessageCircleMore, EyeOff, Eye } from "lucide-react";
 
-const ResetPassword = () => {
+const ResetPassword = ({ token }) => {
   const [formData, setFormData] = useState({
     password: "",
     confirmPassword: "",
@@ -36,6 +36,7 @@ const ResetPassword = () => {
       alert("Passwords do not match!");
       return;
     }
+    console.log(token);
     console.log(formData);
   };
   return (
