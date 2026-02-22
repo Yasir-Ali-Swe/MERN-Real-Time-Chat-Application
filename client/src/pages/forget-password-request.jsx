@@ -1,4 +1,5 @@
 import React from "react";
+import { Loader } from "lucide-react";
 
 const forgetPasswordRequest = () => {
   return (
@@ -6,6 +7,7 @@ const forgetPasswordRequest = () => {
       <h1 className="text-3xl text-primary font-black underline">
         Forget Password Request Page
       </h1>
+      <Loader className="text-primary size-15 animate-spin" />
     </div>
   );
 };
