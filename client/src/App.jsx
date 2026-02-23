@@ -10,6 +10,7 @@ import useAuth from "./features/auth/use-auth";
 import LoadingUI from "./components/loading-ui";
 import ProtectedRoutes from "./routes/protected-routes";
 import AuthRoutes from "./routes/auth-routes";
+import NotFound from "./pages/404-not-found";
 
 const App = () => {
   useAuth();
@@ -33,6 +34,7 @@ const App = () => {
           <Route path="/" element={<ProtectedRoutes />}>
             <Route path="/" element={<Chat />} />
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </LoadingUI>
     </div>
