@@ -41,7 +41,7 @@ const Login = () => {
       setFormData({ email: "", password: "" });
       const { accessToken } = response.data;
       dispatch(setAccessToken(accessToken));
-      navigate("/");
+      navigate("/conversations");
     },
     onError: (error) => {
       console.error("Login failed:", error);
