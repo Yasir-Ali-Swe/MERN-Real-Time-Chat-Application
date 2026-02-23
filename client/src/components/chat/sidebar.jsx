@@ -45,7 +45,7 @@ const Sidebar = () => {
   });
 
   const getVariant = (path) =>
-    location.pathname === path &&
+    location.pathname.startsWith(path) &&
     (path === "/friends" || path === "/conversations")
       ? "default"
       : "ghost";
