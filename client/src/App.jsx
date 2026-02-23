@@ -15,13 +15,16 @@ import ConversationList from "./components/chat/conversation-list";
 import FriendsList from "./components/chat/friends-list";
 import ChatLayout from "./components/chat/chat-layout";
 import ConversationLayout from "./components/chat/conversation-layout";
+import ConversationPlaceholder from "./components/chat/conversation-placeholder";
+import { Navigate } from "react-router-dom";
 
 const App = () => {
   useAuth();
   return (
     <div>
       <LoadingUI>
-        <Routes path="/auth/*" element={<AuthRoutes />}>
+        <Routes>
+          <Route path="/" element={<Navigate to="/conversations" replace />} />
           <Route element={<AuthRoutes />}>
             <Route path="/auth/login" element={<Login />} />
             <Route path="/auth/register" element={<Register />} />
@@ -37,9 +40,21 @@ const App = () => {
           </Route>
           <Route element={<ProtectedRoutes />}>
             <Route element={<ChatLayout />}>
-              <Route element={<ConversationLayout />}>
-                <Route path="/friends" element={<FriendsList />} />
-                <Route path="/conversations" element={<ConversationList />} />
+              <Route
+                path="/friends"
+                element={<ConversationLayout leftPanel={<FriendsList />} />}
+              >
+                <Route index element={<ConversationPlaceholder />} />
+                <Route path=":id" element={<Chat />} />
+              </Route>
+              <Route
+                path="/conversations"
+                element={
+                  <ConversationLayout leftPanel={<ConversationList />} />
+                }
+              >
+                <Route index element={<ConversationPlaceholder />} />
+                <Route path=":id" element={<Chat />} />
               </Route>
             </Route>
           </Route>
