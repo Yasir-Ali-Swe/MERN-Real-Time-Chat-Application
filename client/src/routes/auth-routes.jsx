@@ -13,7 +13,7 @@ const AuthRoutes = () => {
     );
   }
   if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/conversations" replace />;
   }
   return <Outlet />;
 };
