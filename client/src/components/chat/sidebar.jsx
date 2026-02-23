@@ -5,6 +5,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { Card } from "@/components/ui/card";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -17,13 +18,13 @@ import { SquareUser, MessageCircle, MessageCircleMore } from "lucide-react";
 import { ModeToggle } from "@/components/toggle-theme";
 import { logout } from "@/lib/auth-api";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout as logoutAction } from "@/features/auth/auth-slice";
 import { toast } from "react-hot-toast";
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
 
   const { mutate: logoutUser } = useMutation({
@@ -43,12 +44,20 @@ const Sidebar = () => {
     },
   });
 
-  const renderTooltipButton = (icon, label, variant = "default") => (
+  const getVariant = (path) =>
+    location.pathname === path &&
+    (path === "/friends" || path === "/conversations")
+      ? "default"
+      : "ghost";
+
+  const renderTooltipButton = (icon, label, href, variant = "default") => (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Button size="icon" variant={variant} className="rounded-sm">
-          {icon}
-        </Button>
+        <Link to={href}>
+          <Button size="icon" variant={variant} className="rounded-sm">
+            {icon}
+          </Button>
+        </Link>
       </TooltipTrigger>
       <TooltipContent side="right">
         <p>{label}</p>
@@ -57,25 +66,32 @@ const Sidebar = () => {
   );
 
   return (
-    <Card className="flex h-full w-14 flex-col items-center justify-between rounded-none border-r bg-background p-2">
+    <Card className="flex h-full w-14 flex-col items-center justify-between rounded-none bg-background py-2 px-3">
       <div className="flex flex-col items-center gap-4">
         {renderTooltipButton(
           <MessageCircleMore className="size-5" />,
           "NexTalk",
+          "/conversations",
           "ghost",
         )}
         <div className="flex flex-col items-center gap-2">
-          {renderTooltipButton(<SquareUser className="size-4" />, "Friends")}
           {renderTooltipButton(
             <MessageCircle className="size-4" />,
             "Conversations",
+            "/conversations",
+            getVariant("/conversations"),
+          )}
+
+          {renderTooltipButton(
+            <SquareUser className="size-4" />,
+            "Friends",
+            "/friends",
+            getVariant("/friends"),
           )}
         </div>
       </div>
-
       <div className="flex flex-col items-center gap-3">
         <ModeToggle />
-
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="h-8 w-8 cursor-pointer">
@@ -84,9 +100,7 @@ const Sidebar = () => {
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent side="right" align="end">
-            <DropdownMenuItem onClick={() => logoutUser()}>
-              Logout
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={logoutUser}>Logout</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
