@@ -1,9 +1,8 @@
-import ConversationPlaceholder from "@/components/chat/conversation-placeholder";
 
 export default function Chat() {
   return (
     <div>
-      <ConversationPlaceholder />
+      <h1>yasir</h1>
     </div>
   );
 }
