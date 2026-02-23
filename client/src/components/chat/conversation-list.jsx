@@ -2,8 +2,11 @@ import React from "react";
 
 const ConversationList = () => {
   return (
-    <div className="flex items-center justify-center h-screen">
-      <h1 className="text-3xl font-semibold underline">Conversation List</h1>
+    <div className="w-72">
+      <h1 className="text-xl font-semibold m-2">Conversations</h1>
+      <h1 className="text-center text-muted-foreground">
+        No conversation found.
+      </h1>
     </div>
   );
 };
