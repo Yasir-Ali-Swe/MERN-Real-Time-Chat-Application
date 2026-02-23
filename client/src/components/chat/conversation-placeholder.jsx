@@ -3,8 +3,8 @@ import { MessageCirclePlus } from "lucide-react";
 
 export default function ConversationPlaceholder() {
   return (
-    <div className="flex flex-1 items-center justify-center bg-gray-50 dark:bg-gray-900 border">
-      <Card className="flex flex-col items-center justify-center gap-4 p-6 border-none  shadow-none">
+    <div className="flex flex-1 items-center justify-center border">
+      <Card className="flex flex-col items-center justify-center gap-4 p-6 border-none shadow-none rounded-xs">
         <MessageCirclePlus className="h-12 w-12 text-muted-foreground" />
         <CardContent className="text-center">
           <h2 className="text-xl font-semibold text-foreground">
