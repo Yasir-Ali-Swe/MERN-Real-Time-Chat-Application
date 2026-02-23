@@ -1,11 +1,9 @@
-import React from "react";
+import ConversationPlaceholder from "@/components/chat/conversation-placeholder";
 
-const Chat = () => {
+export default function Chat() {
   return (
-    <div className="flex justify-center items-center h-screen">
-      <h1 className="text-3xl text-primary font-black underline">Chat Page</h1>
+    <div>
+      <ConversationPlaceholder />
     </div>
   );
-};
-
-export default Chat;
+}
