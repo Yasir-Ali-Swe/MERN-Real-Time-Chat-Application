@@ -11,6 +11,10 @@ import LoadingUI from "./components/loading-ui";
 import ProtectedRoutes from "./routes/protected-routes";
 import AuthRoutes from "./routes/auth-routes";
 import NotFound from "./pages/404-not-found";
+import ConversationList from "./components/chat/conversation-list";
+import FriendsList from "./components/chat/friends-list";
+import ChatLayout from "./components/chat/chat-layout";
+import ConversationLayout from "./components/chat/conversation-layout";
 
 const App = () => {
   useAuth();
@@ -31,8 +35,13 @@ const App = () => {
             />
             <Route path="/auth/verify-email/:token" element={<VerifyEmail />} />
           </Route>
-          <Route path="/" element={<ProtectedRoutes />}>
-            <Route path="/" element={<Chat />} />
+          <Route element={<ProtectedRoutes />}>
+            <Route element={<ChatLayout />}>
+              <Route element={<ConversationLayout />}>
+                <Route path="/friends" element={<FriendsList />} />
+                <Route path="/conversations" element={<ConversationList />} />
+              </Route>
+            </Route>
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
