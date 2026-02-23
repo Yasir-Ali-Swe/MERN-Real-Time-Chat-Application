@@ -37,7 +37,7 @@ const Login = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: login,
     onSuccess: (response) => {
-      toast.success(response.data.message || "Login successful!");
+      toast.success(response.data?.message);
       setFormData({ email: "", password: "" });
       const { accessToken } = response.data;
       dispatch(setAccessToken(accessToken));
