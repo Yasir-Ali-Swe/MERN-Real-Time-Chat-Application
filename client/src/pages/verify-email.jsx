@@ -14,7 +14,6 @@ const VerifyEmail = () => {
   const { mutate } = useMutation({
     mutationFn: verifyEmail,
     onSuccess: (response) => {
-      console.log("Email verification successful:", response);
       toast.success(response.message || "Email verified successfully!");
       setLoading(false);
     },
