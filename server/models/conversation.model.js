@@ -18,6 +18,10 @@ const conversationSchema = new mongoose.Schema(
         message: "Direct conversation must have exactly 2 participants",
       },
     },
+    lastMessage: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Message",
+    },
   },
   { timestamps: true },
 );
