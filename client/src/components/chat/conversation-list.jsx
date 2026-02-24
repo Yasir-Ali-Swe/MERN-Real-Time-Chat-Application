@@ -1,29 +1,52 @@
 import React from "react";
 import Conversation from "./conversations";
-
-const conversations = [
-  { id: 1, name: "John Doe" },
-  { id: 2, name: "Jane Smith" },
-  { id: 3, name: "Bob Johnson" },
-  { id: 4, name: "Alice Brown" },
-];
+import { useQuery } from "@tanstack/react-query";
+import { getUserConversations } from "@/lib/chat-api";
+import { Loader } from "lucide-react";
 
 const ConversationList = () => {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["conversations"],
+    queryFn: getUserConversations,
+  });
+
+  const conversations = data?.conversations || [];
+
   return (
     <div className="h-full w-full">
       <h1 className="text-xl font-semibold m-2">Conversations</h1>
-      <div className="flex flex-col gap-2 p-2">
-        {conversations.map((conversation) => (
-          <Conversation
-            key={conversation.id}
-            id={conversation.id}
-            name={conversation.name}
-          />
-        ))}
-        <h1 className="text-center text-muted-foreground mt-4">
-          No other conversation found.
-        </h1>
-      </div>
+
+      {isLoading ? (
+        <div className="flex justify-center p-4">
+          <Loader className="animate-spin" />
+        </div>
+      ) : isError ? (
+        <div className="text-center text-red-500 mt-4">
+          Failed to load conversations.
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2 p-2">
+          {conversations.map((conv) => {
+            const otherParticipant = conv.participants[0] || {};
+            return (
+              <Conversation
+                key={conv._id}
+                id={otherParticipant._id}
+                name={otherParticipant.fullName || "Unknown"}
+                unreadCount={conv.unreadCount}
+                lastMessage={
+                  conv.lastMessage?.text || "New conversation started..."
+                }
+              />
+            );
+          })}
+          {conversations.length === 0 && (
+            <h1 className="text-center text-muted-foreground mt-4">
+              No conversation found.
+            </h1>
+          )}
+        </div>
+      )}
     </div>
   );
 };
