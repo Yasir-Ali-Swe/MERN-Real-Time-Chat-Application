@@ -2,7 +2,13 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const Conversation = ({ id, name, unreadCount, lastMessage }) => {
+const Conversation = ({
+  id,
+  name,
+  unreadCount,
+  lastMessage,
+  profilePicture,
+}) => {
   return (
     <Link
       to={`/conversations/${id}`}
@@ -10,9 +16,9 @@ const Conversation = ({ id, name, unreadCount, lastMessage }) => {
     >
       <div className="flex items-center justify-between gap-2 px-2">
         <div className="flex items-center gap-2 overflow-hidden">
-          <Avatar className="w-8 h-8 shrink-0">
-            <AvatarImage src={`https://i.pravatar.cc/150?u=${id || "user"}`} />
-            <AvatarFallback>{name.charAt(0)}</AvatarFallback>
+          <Avatar className="w-8 h-8 shrink-0 border">
+            <AvatarImage src={profilePicture} />
+            <AvatarFallback>{name.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col overflow-hidden">
             <span className="truncate font-medium">{name}</span>
