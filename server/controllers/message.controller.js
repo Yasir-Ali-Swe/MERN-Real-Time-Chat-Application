@@ -2,17 +2,59 @@ import mongoose from "mongoose";
 import messagesModel from "../models/message.model.js";
 import conversationModel from "../models/conversation.model.js";
 import { getReceiverSocketId, io } from "../socket/socket.js";
+import cloudinary from "../utils/cloudinary.js";
+import streamifier from "streamifier";
 
 export const sendMessage = async (req, res) => {
   try {
     const senderId = req.user._id;
-    const { receiverId, text, image } = req.body;
+    const { receiverId, text } = req.body;
 
     if (!receiverId || !senderId) {
       return res.status(400).json({
         success: false,
         message: "Receiver ID and sender ID are required",
       });
+    }
+
+    if (!text && !req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Message text or image is required",
+      });
+    }
+
+    let imageUrl = "";
+
+    if (req.file) {
+      try {
+        const streamUpload = (req) => {
+          return new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              {
+                folder: "chat_images",
+              },
+              (error, result) => {
+                if (result) {
+                  resolve(result);
+                } else {
+                  reject(error);
+                }
+              }
+            );
+            streamifier.createReadStream(req.file.buffer).pipe(stream);
+          });
+        };
+
+        const result = await streamUpload(req);
+        imageUrl = result.secure_url;
+      } catch (error) {
+        return res.status(500).json({
+          success: false,
+          message: "Failed to upload image",
+          error: error.message,
+        });
+      }
     }
 
     const participants = [
@@ -29,8 +71,8 @@ export const sendMessage = async (req, res) => {
       conversationId: conversation._id,
       senderId,
       receiverId,
-      text,
-      image,
+      text: text || "",
+      image: imageUrl,
     });
 
     await message.save();
