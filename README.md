@@ -6,8 +6,7 @@ A full-stack **real-time 1:1 chat application** built with the **MERN stack**, f
 
 ## Live Demo
 
-- Frontend: _TODO_
-- Backend API: _TODO_
+- Frontend: (Live Link comming soon)
 
 ---
 
