@@ -9,7 +9,7 @@ export const sendVerificationEmail = async ({
   token,
   expireIn,
   subject,
-  purpose, //if purpose is 1 then user verifyEmailTemplate otherwise user forgetPasswordTemplate
+  purpose,
 }) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -34,7 +34,6 @@ export const sendVerificationEmail = async ({
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log(`Verification email sent to ${email}`);
   } catch (error) {
     console.error(`Error sending verification email to ${email}:`, error);
   }
