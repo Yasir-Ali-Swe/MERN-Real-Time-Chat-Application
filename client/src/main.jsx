@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { ThemeProvider } from "./lib/theme-provider";
+import { SocketContextProvider } from "./context/SocketContext";
 
 const queryClient = new QueryClient();
 
@@ -16,9 +17,11 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <TooltipProvider>
-            <App />
-          </TooltipProvider>
+          <SocketContextProvider>
+            <TooltipProvider>
+              <App />
+            </TooltipProvider>
+          </SocketContextProvider>
         </ThemeProvider>
       </QueryClientProvider>
       <Toaster position="top-center" reverseOrder={false} />
