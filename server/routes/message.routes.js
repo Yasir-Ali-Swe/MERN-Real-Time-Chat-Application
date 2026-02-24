@@ -6,10 +6,11 @@ import {
   markAsRead,
 } from "../controllers/message.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";
 
 const router = express.Router();
 
-router.post("/send-message", authMiddleware, sendMessage);
+router.post("/send-message", authMiddleware, upload.single("image"), sendMessage);
 router.get(
   "/get-conversation/:conversationId",
   authMiddleware,
