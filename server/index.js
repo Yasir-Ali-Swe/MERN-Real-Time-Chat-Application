@@ -5,8 +5,9 @@ import connectDB from "./config/db.connect.js";
 import { PORT } from "./config/env.js";
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
+import userRoutes from "./routes/user.routes.js";
+import { app, server } from "./socket/socket.js";
 
-const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -19,8 +20,9 @@ app.use(
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/users", userRoutes);
 
-app.listen(PORT, async () => {
-  console.log("Server is running on port 5000");
+server.listen(PORT, async () => {
+  console.log(`Server is running on port ${PORT}`)
   await connectDB();
 });
