@@ -24,3 +24,8 @@ export const markAsReadApi = async (conversationId) => {
     const response = await api.patch(`/messages/mark-as-read/${conversationId}`);
     return response.data;
 };
+
+export const updateProfileApi = async (data) => {
+    const response = await api.patch("/users/me", data);
+    return response.data;
+};
