@@ -16,7 +16,7 @@ import { MessageCircleMore, Eye, EyeOff, Mail, Loader } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
 import { login } from "../lib/auth-api";
-import { setAccessToken } from "@/features/auth/auth-slice";
+import { setAccessToken, setUser } from "@/features/auth/auth-slice";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -39,8 +39,9 @@ const Login = () => {
     onSuccess: (response) => {
       toast.success(response.data?.message);
       setFormData({ email: "", password: "" });
-      const { accessToken } = response.data;
+      const { accessToken, user } = response.data;
       dispatch(setAccessToken(accessToken));
+      dispatch(setUser(user));
       navigate("/conversations");
     },
     onError: (error) => {
