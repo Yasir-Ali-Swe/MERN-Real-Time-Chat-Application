@@ -5,6 +5,21 @@ import { getReceiverSocketId, getReceiverSocketIds, io } from "../socket/socket.
 import cloudinary from "../utils/cloudinary.js";
 import streamifier from "streamifier";
 
+const emitMessageSeenToSender = (message) => {
+  const senderSocketIds = getReceiverSocketIds(message.senderId);
+  if (senderSocketIds.length === 0) return;
+
+  senderSocketIds.forEach((senderSocketId) => {
+    io.to(senderSocketId).emit("message_seen", {
+      _id: message._id,
+      status: "seen",
+      seenAt: message.seenAt,
+      conversationId: message.conversationId,
+      receiverId: message.receiverId,
+    });
+  });
+};
+
 export const sendMessage = async (req, res) => {
   try {
     const senderId = req.user._id;
@@ -73,6 +88,7 @@ export const sendMessage = async (req, res) => {
       receiverId,
       text: text || "",
       image: imageUrl,
+      status: "sent",
     });
 
     await message.save();
@@ -83,8 +99,24 @@ export const sendMessage = async (req, res) => {
     // Socket.io function to emit to receiver
     const receiverSocketIds = getReceiverSocketIds(receiverId);
     if (receiverSocketIds.length > 0) {
+      message.status = "delivered";
+      message.deliveredAt = new Date();
+      await message.save();
+
       receiverSocketIds.forEach((receiverSocketId) => {
+        io.to(receiverSocketId).emit("receive_message", message);
         io.to(receiverSocketId).emit("receiveMessage", message);
+      });
+
+      const senderSocketIds = getReceiverSocketIds(senderId);
+      senderSocketIds.forEach((senderSocketId) => {
+        io.to(senderSocketId).emit("message_delivered", {
+          _id: message._id,
+          status: "delivered",
+          deliveredAt: message.deliveredAt,
+          receiverId: message.receiverId,
+          conversationId: message.conversationId,
+        });
       });
     }
 
@@ -239,10 +271,32 @@ export const markAsRead = async (req, res) => {
       return res.status(200).json({ success: true, message: "No conversation" });
     }
 
+    const pendingMessages = await messagesModel.find({
+      conversationId: conversation._id,
+      receiverId: userId,
+      status: { $ne: "seen" },
+    });
+
+    const seenAt = new Date();
+
     await messagesModel.updateMany(
-      { conversationId: conversation._id, receiverId: userId, read: false },
-      { $set: { read: true } }
+      { conversationId: conversation._id, receiverId: userId, status: { $ne: "seen" } },
+      {
+        $set: {
+          read: true,
+          status: "seen",
+          seenAt,
+        },
+      }
     );
+
+    pendingMessages.forEach((message) => {
+      emitMessageSeenToSender({
+        ...message.toObject(),
+        status: "seen",
+        seenAt,
+      });
+    });
 
     return res.status(200).json({
       success: true,
