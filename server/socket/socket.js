@@ -2,6 +2,9 @@ import { Server } from "socket.io";
 import http from "http";
 import express from "express";
 import User from "../models/user.model.js";
+import mongoose from "mongoose";
+import conversationModel from "../models/conversation.model.js";
+import messagesModel from "../models/message.model.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -62,6 +65,61 @@ const markUserOffline = async (userId) => {
     }
 };
 
+const markPendingMessagesAsDelivered = async (userId) => {
+    const now = new Date();
+    const pendingMessages = await messagesModel.find({
+        receiverId: userId,
+        status: "sent",
+    });
+
+    if (pendingMessages.length === 0) return;
+
+    await messagesModel.updateMany(
+        { receiverId: userId, status: "sent" },
+        {
+            $set: {
+                status: "delivered",
+                deliveredAt: now,
+            },
+        },
+    );
+
+    pendingMessages.forEach((pendingMessage) => {
+        const senderSocketIds = getReceiverSocketIds(pendingMessage.senderId);
+        senderSocketIds.forEach((senderSocketId) => {
+            io.to(senderSocketId).emit("message_delivered", {
+                _id: pendingMessage._id,
+                status: "delivered",
+                deliveredAt: now,
+                receiverId: pendingMessage.receiverId,
+                conversationId: pendingMessage.conversationId,
+            });
+        });
+    });
+};
+
+const resolveConversation = async (currentUserId, conversationId) => {
+    if (!conversationId) return null;
+
+    let conversation = null;
+
+    if (mongoose.Types.ObjectId.isValid(conversationId)) {
+        conversation = await conversationModel.findOne({
+            _id: conversationId,
+            participants: currentUserId,
+        });
+    }
+
+    if (conversation) return conversation;
+
+    const participants = [
+        new mongoose.Types.ObjectId(currentUserId),
+        new mongoose.Types.ObjectId(conversationId),
+    ].sort();
+
+    return conversationModel.findOne({ participants });
+};
+
 io.on("connection", (socket) => {
     const userId = socket.handshake.query.userId;
 
@@ -79,6 +137,8 @@ io.on("connection", (socket) => {
                 userId: userKey,
             });
         }
+
+        void markPendingMessagesAsDelivered(userKey);
     }
 
     // Broadcast to everyone the currently active users
@@ -96,6 +156,68 @@ io.on("connection", (socket) => {
                 receiverId: String(receiverId),
             });
         });
+    });
+
+    socket.on("send_message", ({ receiverId, tempId }) => {
+        if (!userId || !receiverId) return;
+
+        const senderSocketIds = getReceiverSocketIds(userId);
+        senderSocketIds.forEach((senderSocketId) => {
+            io.to(senderSocketId).emit("send_message", {
+                senderId: String(userId),
+                receiverId: String(receiverId),
+                tempId: tempId || null,
+            });
+        });
+    });
+
+    socket.on("mark_as_seen", async ({ conversationId }) => {
+        if (!userId || !conversationId) return;
+
+        try {
+            const conversation = await resolveConversation(userId, conversationId);
+            if (!conversation) return;
+
+            const pendingMessages = await messagesModel.find({
+                conversationId: conversation._id,
+                receiverId: userId,
+                status: { $ne: "seen" },
+            });
+
+            if (pendingMessages.length === 0) return;
+
+            const seenAt = new Date();
+
+            await messagesModel.updateMany(
+                {
+                    conversationId: conversation._id,
+                    receiverId: userId,
+                    status: { $ne: "seen" },
+                },
+                {
+                    $set: {
+                        read: true,
+                        status: "seen",
+                        seenAt,
+                    },
+                },
+            );
+
+            pendingMessages.forEach((pendingMessage) => {
+                const senderSocketIds = getReceiverSocketIds(pendingMessage.senderId);
+                senderSocketIds.forEach((senderSocketId) => {
+                    io.to(senderSocketId).emit("message_seen", {
+                        _id: pendingMessage._id,
+                        status: "seen",
+                        seenAt,
+                        conversationId: pendingMessage.conversationId,
+                        receiverId: pendingMessage.receiverId,
+                    });
+                });
+            });
+        } catch (error) {
+            console.error("Failed to mark messages as seen:", error);
+        }
     });
 
     socket.on("stop_typing", ({ receiverId }) => {
