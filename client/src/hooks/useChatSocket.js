@@ -7,16 +7,41 @@ export const useChatSocket = (activeConversationId) => {
     const { socket, onlineUsers, typingUsers, lastSeenUsers } = useSocket();
     const queryClient = useQueryClient();
 
+    const emitMarkAsSeen = () => {
+        if (!socket || !activeConversationId) return;
+        socket.emit("mark_as_seen", { conversationId: activeConversationId });
+    };
+
     // Mark as read when entering a conversation
     useEffect(() => {
         if (activeConversationId) {
             markAsReadApi(activeConversationId)
                 .then(() => {
                     queryClient.invalidateQueries({ queryKey: ["conversations"] });
+                    emitMarkAsSeen();
                 })
                 .catch(console.error);
         }
-    }, [activeConversationId, queryClient]);
+    }, [activeConversationId, queryClient, socket]);
+
+    useEffect(() => {
+        if (!socket || !activeConversationId) return;
+
+        const handleWindowFocus = () => {
+            emitMarkAsSeen();
+            markAsReadApi(activeConversationId)
+                .then(() => {
+                    queryClient.invalidateQueries({ queryKey: ["conversations"] });
+                })
+                .catch(console.error);
+        };
+
+        window.addEventListener("focus", handleWindowFocus);
+
+        return () => {
+            window.removeEventListener("focus", handleWindowFocus);
+        };
+    }, [socket, activeConversationId, queryClient]);
 
     useEffect(() => {
         if (!socket) return;
@@ -43,7 +68,7 @@ export const useChatSocket = (activeConversationId) => {
                                     ? {
                                         ...newMessage,
                                         tempId: newMessage.tempId,
-                                        status: "sent",
+                                        status: newMessage.status || message.status,
                                     }
                                     : message,
                             ),
@@ -57,6 +82,7 @@ export const useChatSocket = (activeConversationId) => {
                 markAsReadApi(activeConversationId)
                     .then(() => {
                         queryClient.invalidateQueries({ queryKey: ["conversations"] });
+                        emitMarkAsSeen();
                     })
                     .catch(console.error);
             } else {
@@ -84,7 +110,7 @@ export const useChatSocket = (activeConversationId) => {
                         ...old,
                         messages: messages.map((message) =>
                             String(message.tempId) === String(confirmedMessage.tempId)
-                                ? { ...confirmedMessage, status: "sent" }
+                                ? { ...confirmedMessage, status: confirmedMessage.status || "sent" }
                                 : message,
                         ),
                     };
@@ -92,17 +118,63 @@ export const useChatSocket = (activeConversationId) => {
 
                 return {
                     ...old,
-                    messages: [...messages, { ...confirmedMessage, status: "sent" }],
+                    messages: [...messages, { ...confirmedMessage, status: confirmedMessage.status || "sent" }],
+                };
+            });
+        };
+
+        const handleMessageDelivered = (payload) => {
+            if (!payload?._id || !activeConversationId) return;
+
+            queryClient.setQueryData(["messages", activeConversationId], (old) => {
+                const messages = old?.messages || [];
+                return {
+                    ...old,
+                    messages: messages.map((message) =>
+                        String(message._id) === String(payload._id)
+                            ? {
+                                ...message,
+                                status: "delivered",
+                                deliveredAt: payload.deliveredAt || message.deliveredAt,
+                            }
+                            : message,
+                    ),
+                };
+            });
+        };
+
+        const handleMessageSeen = (payload) => {
+            if (!payload?._id || !activeConversationId) return;
+
+            queryClient.setQueryData(["messages", activeConversationId], (old) => {
+                const messages = old?.messages || [];
+                return {
+                    ...old,
+                    messages: messages.map((message) =>
+                        String(message._id) === String(payload._id)
+                            ? {
+                                ...message,
+                                status: "seen",
+                                seenAt: payload.seenAt || message.seenAt,
+                            }
+                            : message,
+                    ),
                 };
             });
         };
 
         socket.on("receiveMessage", handleReceiveMessage);
+        socket.on("receive_message", handleReceiveMessage);
         socket.on("message_confirmed", handleMessageConfirmed);
+        socket.on("message_delivered", handleMessageDelivered);
+        socket.on("message_seen", handleMessageSeen);
 
         return () => {
             socket.off("receiveMessage", handleReceiveMessage);
+            socket.off("receive_message", handleReceiveMessage);
             socket.off("message_confirmed", handleMessageConfirmed);
+            socket.off("message_delivered", handleMessageDelivered);
+            socket.off("message_seen", handleMessageSeen);
         };
     }, [socket, activeConversationId, queryClient]);
 
