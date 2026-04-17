@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
 import messagesModel from "../models/message.model.js";
 import conversationModel from "../models/conversation.model.js";
-import { getReceiverSocketId, io } from "../socket/socket.js";
+import { getReceiverSocketId, getReceiverSocketIds, io } from "../socket/socket.js";
 import cloudinary from "../utils/cloudinary.js";
 import streamifier from "streamifier";
 
 export const sendMessage = async (req, res) => {
   try {
     const senderId = req.user._id;
-    const { receiverId, text } = req.body;
+    const { receiverId, text, tempId } = req.body;
 
     if (!receiverId || !senderId) {
       return res.status(400).json({
@@ -81,15 +81,38 @@ export const sendMessage = async (req, res) => {
     await conversation.save();
 
     // Socket.io function to emit to receiver
-    const receiverSocketId = getReceiverSocketId(receiverId);
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("receiveMessage", message);
+    const receiverSocketIds = getReceiverSocketIds(receiverId);
+    if (receiverSocketIds.length > 0) {
+      receiverSocketIds.forEach((receiverSocketId) => {
+        io.to(receiverSocketId).emit("receiveMessage", message);
+      });
+    }
+
+    const senderSocketIds = getReceiverSocketIds(senderId);
+    if (senderSocketIds.length > 0) {
+      senderSocketIds.forEach((senderSocketId) => {
+        io.to(senderSocketId).emit("message_confirmed", {
+          ...message.toObject(),
+          tempId: tempId || null,
+        });
+      });
+    } else {
+      const senderSocketId = getReceiverSocketId(senderId);
+      if (senderSocketId) {
+        io.to(senderSocketId).emit("message_confirmed", {
+          ...message.toObject(),
+          tempId: tempId || null,
+        });
+      }
     }
 
     return res.status(201).json({
       success: true,
       message: "Message created successfully",
-      data: message,
+      data: {
+        ...message.toObject(),
+        tempId: tempId || null,
+      },
     });
   } catch (error) {
     return res.status(500).json({
@@ -152,7 +175,7 @@ export const getUserConversations = async (req, res) => {
       .find({ participants: userId })
       .populate({
         path: "participants",
-        select: "fullName email profilePicture",
+        select: "fullName email profilePicture lastSeenAt",
         match: { _id: { $ne: userId } },
       })
       .populate("lastMessage")
