@@ -20,6 +20,36 @@ function Avatar({
   );
 }
 
+function AvatarWithPresence({
+  className,
+  size = "default",
+  isOnline = false,
+  wrapperClassName,
+  indicatorClassName,
+  children,
+  ...props
+}) {
+  return (
+    <div
+      data-slot="avatar-presence-wrapper"
+      className={cn("relative inline-flex overflow-visible", wrapperClassName)}
+    >
+      <Avatar className={className} size={size} {...props}>
+        {children}
+      </Avatar>
+      {isOnline && (
+        <span
+          data-slot="avatar-online-indicator"
+          className={cn(
+            "absolute top-0 right-0 z-20 size-2.5 translate-x-1/4 -translate-y-1/4 rounded-full bg-green-500 border-2 border-background",
+            indicatorClassName,
+          )}
+        />
+      )}
+    </div>
+  );
+}
+
 function AvatarImage({
   className,
   ...props
@@ -97,6 +127,7 @@ function AvatarGroupCount({
 
 export {
   Avatar,
+  AvatarWithPresence,
   AvatarImage,
   AvatarFallback,
   AvatarBadge,
