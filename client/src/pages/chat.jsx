@@ -7,6 +7,7 @@ import {
   X,
   Loader,
   Clock3,
+  Check,
   CheckCheck,
   CircleAlert,
 } from "lucide-react";
@@ -166,12 +167,12 @@ export default function Chat() {
         if (exists) {
           return current.map((message) =>
             confirmedTempId && String(message.tempId) === String(confirmedTempId)
-              ? { ...confirmedMessage, status: "sent" }
+              ? { ...confirmedMessage, status: confirmedMessage.status || "sent" }
               : message,
           );
         }
 
-        return [...current, { ...confirmedMessage, status: "sent" }];
+        return [...current, { ...confirmedMessage, status: confirmedMessage.status || "sent" }];
       });
 
       setText("");
@@ -269,6 +270,14 @@ export default function Chat() {
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
+
+      if (socket) {
+        socket.emit("send_message", {
+          receiverId: id,
+          tempId,
+        });
+      }
+
       sendMessage(createFormData(payload));
     }
   };
@@ -401,8 +410,18 @@ export default function Chat() {
                       </span>
                     )}
                     {isMe && messageStatus === "sent" && (
+                      <span className="flex items-center gap-1 text-muted-foreground">
+                        <Check className="size-3" />
+                      </span>
+                    )}
+                    {isMe && messageStatus === "delivered" && (
+                      <span className="flex items-center gap-1 text-muted-foreground">
+                        <CheckCheck className="size-3" />
+                      </span>
+                    )}
+                    {isMe && messageStatus === "seen" && (
                       <span className="flex items-center gap-1 text-emerald-500">
-                        <CheckCheck className="size-3" /> sent
+                        <CheckCheck className="size-3" />
                       </span>
                     )}
                     {isMe && messageStatus === "failed" && (
