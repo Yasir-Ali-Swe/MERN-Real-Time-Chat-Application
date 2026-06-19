@@ -3,6 +3,7 @@ import { sendVerificationEmail } from "../utils/verify.email.js";
 import { generateToken } from "../utils/jwt.helper.js";
 import { hashPassword, comparePassword } from "../utils/password.helper.js";
 import { getUserFromToken } from "../utils/jwt.helper.js";
+import { NODE_ENV } from "../config/env.js";
 
 export const register = async (req, res) => {
   try {
@@ -108,8 +109,8 @@ export const login = async (req, res) => {
     const refreshToken = generateToken(user._id, "7d", user.tokenVersion);
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false, // Set to true in production with HTTPS
-      sameSite: "strict",
+      secure: NODE_ENV === "production" ? true : false, // Set to true in production with HTTPS
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
     res.status(200).json({
@@ -154,8 +155,8 @@ export const refreshAuthToken = async (req, res) => {
     const newRefreshToken = generateToken(user._id, "7d", user.tokenVersion);
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
-      secure: false, // Set to true in production with HTTPS
-      sameSite: "strict",
+      secure: NODE_ENV === "production" ? true : false, // Set to true in production with HTTPS
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
     res.status(200).json({
