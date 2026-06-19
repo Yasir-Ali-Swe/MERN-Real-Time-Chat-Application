@@ -64,7 +64,7 @@ export const SocketContextProvider = ({ children }) => {
       setTypingUsers({});
       setLastSeenUsers({});
 
-      currentSocket = io("http://localhost:5000", {
+      currentSocket = io(import.meta.env.VITE_API_SOCKET_URL, {
         query: {
           userId: user._id,
         },
@@ -91,7 +91,9 @@ export const SocketContextProvider = ({ children }) => {
 
       currentSocket.on("user_offline", ({ userId, lastSeenAt }) => {
         const offlineKey = String(userId);
-        setOnlineUsers((prev) => prev.filter((id) => String(id) !== offlineKey));
+        setOnlineUsers((prev) =>
+          prev.filter((id) => String(id) !== offlineKey),
+        );
         clearTyping(offlineKey);
         if (lastSeenAt) {
           setLastSeenUsers((prev) => ({
