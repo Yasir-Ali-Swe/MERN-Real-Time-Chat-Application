@@ -10,7 +10,7 @@ import { app, server } from "./socket/socket.js";
 import helmet from "helmet";
 import morgan from "morgan";
 
-app.use(helmet());
+// app.use(helmet());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(cookieParser());
