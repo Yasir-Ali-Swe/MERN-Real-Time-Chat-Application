@@ -201,10 +201,12 @@ export default function Chat() {
     return () => {
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = null;
       }
       if (socket && id && isTypingRef.current) {
         socket.emit("stop_typing", { receiverId: id });
       }
+      isTypingRef.current = false;
     };
   }, [socket, id]);
 
@@ -227,8 +229,6 @@ export default function Chat() {
     if (!isTypingRef.current) {
       socket.emit("typing", { receiverId: id });
       isTypingRef.current = true;
-    } else {
-      socket.emit("typing", { receiverId: id });
     }
 
     if (typingTimeoutRef.current) {
@@ -326,13 +326,12 @@ export default function Chat() {
               {chatUserName}
             </div>
             <div
-              className={`truncate text-xs ${
-                headerPresence.type === "typing"
-                  ? "text-amber-500"
-                  : headerPresence.type === "online"
-                    ? "text-emerald-500"
-                    : "text-muted-foreground"
-              }`}
+              className={`truncate text-xs ${headerPresence.type === "typing"
+                ? "text-amber-500"
+                : headerPresence.type === "online"
+                  ? "text-emerald-500"
+                  : "text-muted-foreground"
+                }`}
             >
               {headerPresence.text}
             </div>
@@ -348,13 +347,12 @@ export default function Chat() {
               {chatUserName}
             </div>
             <div
-              className={`truncate text-xs ${
-                headerPresence.type === "typing"
-                  ? "text-amber-500"
-                  : headerPresence.type === "online"
-                    ? "text-emerald-500"
-                    : "text-muted-foreground"
-              }`}
+              className={`truncate text-xs ${headerPresence.type === "typing"
+                ? "text-amber-500"
+                : headerPresence.type === "online"
+                  ? "text-emerald-500"
+                  : "text-muted-foreground"
+                }`}
             >
               {headerPresence.text}
             </div>
