@@ -37,6 +37,9 @@ export const getUserFromToken = async (token) => {
       err.status = 401;
       throw err;
     }
+    if (error.status) {
+      throw error;
+    }
     const err = new Error("Failed to authenticate token");
     err.status = 500;
     throw err;
