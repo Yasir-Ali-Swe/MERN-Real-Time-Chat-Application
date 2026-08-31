@@ -1,4 +1,5 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { SquareUser, MessageCircle } from "lucide-react";
 import { ModeToggle } from "@/components/toggle-theme";
@@ -11,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout as logoutAction } from "@/features/auth/auth-slice";
 import { logout } from "@/lib/auth-api";
 import { toast } from "react-hot-toast";
@@ -20,6 +21,7 @@ const MobileBottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
 
   const { mutate: logoutUser } = useMutation({
     mutationFn: logout,
@@ -67,8 +69,8 @@ const MobileBottomNav = () => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Avatar className="h-8 w-8 cursor-pointer">
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>U</AvatarFallback>
+            <AvatarImage src={user?.profilePicture || "https://github.com/shadcn.png"} />
+            <AvatarFallback>{user?.fullName[0].toUpperCase()}</AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="top" align="end">
