@@ -25,6 +25,8 @@ const App = () => {
       <LoadingUI>
         <Routes>
           <Route path="/" element={<Navigate to="/conversations" replace />} />
+          <Route path="/login" element={<Navigate to="/auth/login" replace />} />
+          <Route path="/register" element={<Navigate to="/auth/register" replace />} />
           <Route element={<AuthRoutes />}>
             <Route path="/auth/login" element={<Login />} />
             <Route path="/auth/register" element={<Register />} />
