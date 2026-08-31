@@ -21,21 +21,27 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes("/auth/refresh-token") &&
+      !originalRequest.url?.includes("/auth/login")
+    ) {
       originalRequest._retry = true;
       try {
-        const response = await api.post(
-          "/auth/refresh-token",
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_BASE_URL}/auth/refresh-token`,
           {},
           { withCredentials: true },
         );
-        Store.dispatch(setAccessToken(response.data?.accessToken));
-        originalRequest.headers["Authorization"] =
-          `Bearer ${response.data?.accessToken}`;
+        const newAccessToken = response.data?.accessToken;
+        Store.dispatch(setAccessToken(newAccessToken));
+        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
         return api(originalRequest);
-      } catch (error) {
+      } catch (refreshError) {
         Store.dispatch(logout());
-        window.location.href = "/auth/login";
+        return Promise.reject(refreshError);
       }
     }
     return Promise.reject(error);
