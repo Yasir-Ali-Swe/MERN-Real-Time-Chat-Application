@@ -1,37 +1,45 @@
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
+import { useDispatch } from "react-redux";
+import api from "@/lib/axios";
 import { setAccessToken, setUser, logout, finishLoading } from "./auth-slice";
 
 const useAuth = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    let isMounted = true;
+
     const restoreSession = async () => {
       try {
-        const response = await axios.post(
-          "http://localhost:5000/api/auth/refresh-token",
-          {},
-          {
-            withCredentials: true,
-          },
-        );
-        dispatch(setAccessToken(response.data?.accessToken));
-        const meRes = await axios.get("http://localhost:5000/api/auth/getMe", {
-          headers: {
-            Authorization: `Bearer ${response.data?.accessToken}`,
-          },
-          withCredentials: true,
-        });
-        dispatch(setUser(meRes.data?.user));
+        const response = await api.post("/auth/refresh-token", {});
+        const token = response.data?.accessToken;
+        if (token && isMounted) {
+          dispatch(setAccessToken(token));
+          const meRes = await api.get("/auth/getMe", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (meRes.data?.user && isMounted) {
+            dispatch(setUser(meRes.data.user));
+          }
+        }
       } catch (error) {
-        console.error("Session restoration failed:", error);
-        dispatch(logout());
+        if (isMounted) {
+          dispatch(logout());
+        }
       } finally {
-        dispatch(finishLoading());
+        if (isMounted) {
+          dispatch(finishLoading());
+        }
       }
     };
+
     restoreSession();
+
+    return () => {
+      isMounted = false;
+    };
   }, [dispatch]);
 };
 
