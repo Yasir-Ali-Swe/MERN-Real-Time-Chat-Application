@@ -5,6 +5,20 @@ import { hashPassword, comparePassword } from "../utils/password.helper.js";
 import { getUserFromToken } from "../utils/jwt.helper.js";
 import { NODE_ENV } from "../config/env.js";
 
+const isProduction = NODE_ENV === "production";
+const getCookieOptions = () => ({
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+});
+
+const getClearCookieOptions = () => ({
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
+});
+
 export const register = async (req, res) => {
   try {
     const { fullName, email, password } = req.body;
@@ -54,7 +68,7 @@ export const register = async (req, res) => {
     });
   } catch (error) {
     res
-      .status(500)
+      .status(error.status || 500)
       .json({ success: false, message: "Server error", error: error.message });
   }
 };
@@ -80,7 +94,7 @@ export const verifyEmail = async (req, res) => {
       .json({ success: true, message: "Email verified successfully" });
   } catch (error) {
     res
-      .status(500)
+      .status(error.status || 500)
       .json({ success: false, message: "Server error", error: error.message });
   }
 };
@@ -107,12 +121,7 @@ export const login = async (req, res) => {
     }
     const accessToken = generateToken(user._id, "1h", user.tokenVersion);
     const refreshToken = generateToken(user._id, "7d", user.tokenVersion);
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: NODE_ENV === "production" ? true : false, // Set to true in production with HTTPS
-      sameSite: "none",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
+    res.cookie("refreshToken", refreshToken, getCookieOptions());
     res.status(200).json({
       success: true,
       message: "Login successful",
@@ -126,7 +135,7 @@ export const login = async (req, res) => {
     });
   } catch (error) {
     res
-      .status(500)
+      .status(error.status || 500)
       .json({ success: false, message: "Server error", error: error.message });
   }
 };
@@ -136,29 +145,24 @@ export const refreshAuthToken = async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
       return res
-        .status(400)
+        .status(401)
         .json({ success: false, message: "No refresh token provided" });
     }
-    const { id, tokenVersion } = await getUserFromToken(refreshToken);
-    const user = await userModel.findById(id);
+    const userFromToken = await getUserFromToken(refreshToken);
+    const user = await userModel.findById(userFromToken._id || userFromToken.id);
     if (!user) {
       return res
         .status(404)
         .json({ success: false, message: "User not found" });
     }
-    if (user.tokenVersion !== tokenVersion) {
+    if (user.tokenVersion !== userFromToken.tokenVersion) {
       return res
         .status(401)
         .json({ success: false, message: "Token has been revoked" });
     }
     const newAccessToken = generateToken(user._id, "1h", user.tokenVersion);
     const newRefreshToken = generateToken(user._id, "7d", user.tokenVersion);
-    res.cookie("refreshToken", newRefreshToken, {
-      httpOnly: true,
-      secure: NODE_ENV === "production" ? true : false, // Set to true in production with HTTPS
-      sameSite: "none",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
+    res.cookie("refreshToken", newRefreshToken, getCookieOptions());
     res.status(200).json({
       success: true,
       message: "Token refreshed successfully",
@@ -166,7 +170,7 @@ export const refreshAuthToken = async (req, res) => {
     });
   } catch (error) {
     res
-      .status(500)
+      .status(error.status || 500)
       .json({ success: false, message: "Server error", error: error.message });
   }
 };
@@ -265,9 +269,9 @@ export const getMe = async (req, res) => {
         .status(401)
         .json({ success: false, message: "Not authorized, no token provided" });
     }
-    const { id } = await getUserFromToken(token);
+    const userFromToken = await getUserFromToken(token);
     const user = await userModel
-      .findById(id)
+      .findById(userFromToken._id || userFromToken.id)
       .select("-password -__v -tokenVersion -createdAt -updatedAt");
     if (!user) {
       return res
@@ -280,7 +284,7 @@ export const getMe = async (req, res) => {
     });
   } catch (error) {
     res
-      .status(500)
+      .status(error.status || 500)
       .json({ success: false, message: "Server error", error: error.message });
   }
 };
@@ -288,19 +292,22 @@ export const getMe = async (req, res) => {
 export const logout = async (req, res) => {
   try {
     const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) {
-      return res
-        .status(400)
-        .json({ success: false, message: "No active session found" });
+    if (refreshToken) {
+      try {
+        const user = await getUserFromToken(refreshToken);
+        if (user) {
+          user.tokenVersion += 1; // Invalidate all existing tokens
+          await user.save();
+        }
+      } catch (err) {
+        // Continue to clear cookie even if token was already expired/revoked
+      }
     }
-    const user = await getUserFromToken(refreshToken);
-    user.tokenVersion += 1; // Invalidate all existing tokens
-    await user.save();
-    res.clearCookie("refreshToken");
+    res.clearCookie("refreshToken", getClearCookieOptions());
     res.status(200).json({ success: true, message: "Logged out successfully" });
   } catch (error) {
     res
-      .status(500)
+      .status(error.status || 500)
       .json({ success: false, message: "Server error", error: error.message });
   }
 };
