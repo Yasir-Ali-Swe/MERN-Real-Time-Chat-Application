@@ -35,6 +35,10 @@ export const resetPassword = async (password, token) => {
 };
 
 export const logout = async () => {
-  const response = await api.post("/auth/logout", {}, { withCredentials: true });
+  const response = await api.post(
+    "/auth/logout",
+    {},
+    { withCredentials: true },
+  );
   return response.data;
 };
