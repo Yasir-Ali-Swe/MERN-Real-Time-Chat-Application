@@ -25,11 +25,10 @@ export const authMiddleware = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.error("Authentication Error:", error);
-    res.status(500).json({
+    console.error("Authentication Error:", error.message || error);
+    res.status(error.status || 401).json({
       success: false,
-      message: "Authentication failed",
-      error
-    }); 
+      message: error.message || "Authentication failed",
+    });
   }
 };
