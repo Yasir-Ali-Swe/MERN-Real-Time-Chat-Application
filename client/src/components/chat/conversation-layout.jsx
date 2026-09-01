@@ -7,7 +7,7 @@ const ConversationLayout = ({ leftPanel }) => {
   return (
     <>
       <div
-        className={`w-full lg:w-72 border h-full overflow-hidden ${isChatActive ? "hidden lg:block" : "block"}`}
+        className={`w-full lg:w-72 border h-full rounded-lg border-1.5 overflow-hidden ${isChatActive ? "hidden lg:block" : "block"}`}
       >
         {leftPanel}
       </div>
