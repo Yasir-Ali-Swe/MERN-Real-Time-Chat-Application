@@ -34,7 +34,7 @@ const forgetPasswordRequest = () => {
     onError: (error) => {
       toast.error(
         error.response?.data?.message ||
-          "Failed to send reset link. Please try again.",
+        "Failed to send reset link. Please try again.",
       );
     },
   });
@@ -98,7 +98,7 @@ const forgetPasswordRequest = () => {
         </CardContent>
         <CardFooter className={"flex justify-center items-center"}>
           <h1 className="text-primary font-medium">
-            &copy; All rights reserved to NexTalk.
+            &copy; {new Date().getFullYear()} All rights reserved to NexTalk.
           </h1>
         </CardFooter>
       </Card>
