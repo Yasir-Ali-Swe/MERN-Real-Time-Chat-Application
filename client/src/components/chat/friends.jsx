@@ -9,7 +9,7 @@ const Friends = ({ id, name, profilePicture }) => {
   return (
     <Link
       to={`/friends/${id}`}
-      className={`py-2 border-b hover:bg-accent cursor-pointer block ${isSelected ? "bg-card" : ""
+      className={`py-2 border-b hover:bg-accent cursor-pointer block ${isSelected ? "bg-muted" : ""
         }`}
     >
       <div className="flex items-center gap-2 px-2">
