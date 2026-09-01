@@ -27,21 +27,25 @@ export const SocketContextProvider = ({ children }) => {
   const markTyping = (userId) => {
     const typingKey = String(userId);
 
-    setTypingUsers((prev) => ({
-      ...prev,
-      [typingKey]: true,
-    }));
-
     clearTypingTimer(typingKey);
+
+    setTypingUsers((prev) => {
+      if (prev[typingKey]) return prev;
+      return {
+        ...prev,
+        [typingKey]: true,
+      };
+    });
 
     const timer = setTimeout(() => {
       setTypingUsers((prev) => {
+        if (!prev[typingKey]) return prev;
         const next = { ...prev };
         delete next[typingKey];
         return next;
       });
       typingTimersRef.current.delete(typingKey);
-    }, 1800);
+    }, 10000);
 
     typingTimersRef.current.set(typingKey, timer);
   };
@@ -50,6 +54,7 @@ export const SocketContextProvider = ({ children }) => {
     const typingKey = String(userId);
     clearTypingTimer(typingKey);
     setTypingUsers((prev) => {
+      if (!prev[typingKey]) return prev;
       const next = { ...prev };
       delete next[typingKey];
       return next;
