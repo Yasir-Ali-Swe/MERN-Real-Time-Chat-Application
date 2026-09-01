@@ -43,7 +43,7 @@ const MobileBottomNav = () => {
     location.pathname.startsWith(path) ? "default" : "ghost";
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 flex h-14 items-center justify-around border-t bg-background px-4 lg:hidden pb-safe">
+    <div className="fixed bottom-0 left-0 right-0 z-50 flex rounded-lg h-14 items-center justify-around bg-background px-4 lg:hidden pb-safe">
       <Link to="/conversations">
         <Button
           size="icon"
