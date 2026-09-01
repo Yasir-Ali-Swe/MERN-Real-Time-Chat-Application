@@ -112,12 +112,9 @@ const resolveConversation = async (currentUserId, conversationId) => {
 
     if (conversation) return conversation;
 
-    const participants = [
-        new mongoose.Types.ObjectId(currentUserId),
-        new mongoose.Types.ObjectId(conversationId),
-    ].sort();
-
-    return conversationModel.findOne({ participants });
+    return conversationModel.findOne({
+        participants: { $all: [currentUserId, conversationId] },
+    });
 };
 
 io.on("connection", (socket) => {
