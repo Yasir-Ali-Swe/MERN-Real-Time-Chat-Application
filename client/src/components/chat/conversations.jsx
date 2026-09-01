@@ -23,7 +23,7 @@ const Conversation = ({
   return (
     <Link
       to={`/conversations/${id}`}
-      className={`py-2 border-b hover:bg-accent cursor-pointer block ${isSelected ? "bg-card" : ""
+      className={`py-2 border-b hover:bg-accent cursor-pointer block ${isSelected ? "bg-primary/15" : ""
         }`}
     >
       <div className="flex items-center justify-between gap-2 px-2">
