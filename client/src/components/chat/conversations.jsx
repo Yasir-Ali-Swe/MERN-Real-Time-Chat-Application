@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   AvatarWithPresence,
   AvatarFallback,
@@ -15,13 +15,16 @@ const Conversation = ({
   isTyping,
   isOnline,
 }) => {
+  const { id: activeId } = useParams();
+  const isSelected = activeId === String(id);
   const secondaryText = isTyping ? "typing..." : lastMessage;
   const secondaryClass = isTyping ? "text-amber-500" : "text-muted-foreground";
 
   return (
     <Link
       to={`/conversations/${id}`}
-      className="py-2 border-b hover:bg-accent cursor-pointer block"
+      className={`py-2 border-b hover:bg-accent cursor-pointer block ${isSelected ? "bg-card" : ""
+        }`}
     >
       <div className="flex items-center justify-between gap-2 px-2">
         <div className="flex items-center gap-2 overflow-hidden">
