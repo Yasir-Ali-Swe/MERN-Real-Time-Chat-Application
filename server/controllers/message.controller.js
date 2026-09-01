@@ -64,6 +64,7 @@ export const sendMessage = async (req, res) => {
         const result = await streamUpload(req);
         imageUrl = result.secure_url;
       } catch (error) {
+        console.log("Error in send message controller", error)
         return res.status(500).json({
           success: false,
           message: "Failed to upload image",
@@ -72,14 +73,24 @@ export const sendMessage = async (req, res) => {
       }
     }
 
-    const participants = [
-      new mongoose.Types.ObjectId(senderId),
-      new mongoose.Types.ObjectId(receiverId),
-    ].sort();
+    let conversation = await conversationModel.findOne({
+      participants: { $all: [senderId, receiverId] },
+    });
 
-    let conversation = await conversationModel.findOne({ participants });
     if (!conversation) {
-      conversation = new conversationModel({ participants });
+      const participants = [
+        new mongoose.Types.ObjectId(senderId),
+        new mongoose.Types.ObjectId(receiverId),
+      ].sort((a, b) => a.toString().localeCompare(b.toString()));
+
+      try {
+        conversation = await conversationModel.create({ participants });
+      } catch (err) {
+        conversation = await conversationModel.findOne({
+          participants: { $all: [senderId, receiverId] },
+        });
+        if (!conversation) throw err;
+      }
     }
 
     const message = new messagesModel({
@@ -147,6 +158,7 @@ export const sendMessage = async (req, res) => {
       },
     });
   } catch (error) {
+    console.log("Error in send message controller", error);
     return res.status(500).json({
       success: false,
       message: "Failed to create message",
@@ -167,12 +179,9 @@ export const getConversation = async (req, res) => {
       });
     }
 
-    const participants = [
-      new mongoose.Types.ObjectId(senderId),
-      new mongoose.Types.ObjectId(receiverId),
-    ].sort();
-
-    const conversation = await conversationModel.findOne({ participants });
+    const conversation = await conversationModel.findOne({
+      participants: { $all: [senderId, receiverId] },
+    });
 
     if (!conversation) {
       return res.status(200).json({
@@ -260,12 +269,9 @@ export const markAsRead = async (req, res) => {
       });
     }
 
-    const participants = [
-      new mongoose.Types.ObjectId(userId),
-      new mongoose.Types.ObjectId(receiverId),
-    ].sort();
-
-    const conversation = await conversationModel.findOne({ participants });
+    const conversation = await conversationModel.findOne({
+      participants: { $all: [userId, receiverId] },
+    });
 
     if (!conversation) {
       return res.status(200).json({ success: true, message: "No conversation" });
