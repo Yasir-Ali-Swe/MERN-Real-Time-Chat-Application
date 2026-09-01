@@ -155,7 +155,7 @@ const Sidebar = () => {
   return (
     <>
       {isUpdating && <FullScreenLoader message="Updating profile..." />}
-      <Card className="flex h-full w-14 flex-col items-center justify-between rounded-none bg-background py-2 px-3">
+      <Card className="flex h-full w-14 flex-col items-center justify-between border-none bg-background py-2 px-3">
         <div className="flex flex-col items-center gap-4">
           {renderTooltipButton(
             <MessageCircleMore className="size-5" />,
