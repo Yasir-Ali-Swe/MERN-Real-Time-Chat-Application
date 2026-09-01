@@ -1,3 +1,4 @@
+import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +23,15 @@ import {
   getUsers,
   getUserConversations,
 } from "@/lib/chat-api";
+import {
+  Message,
+  MessageAvatar,
+  MessageContent,
+  MessageFooter,
+  MessageGroup,
+} from "@/components/ui/message";
+import { Bubble, BubbleContent } from "@/components/ui/bubble";
+import { Attachment, AttachmentMedia } from "@/components/ui/attachment";
 import { useSelector } from "react-redux";
 import FullScreenLoader from "@/components/ui/full-screen-loader";
 import { createFormData, handleImagePreview } from "@/lib/file-utils";
@@ -96,6 +106,29 @@ export default function Chat() {
   });
 
   const messages = messagesData?.messages || [];
+
+  const messageGroups = React.useMemo(() => {
+    const groups = [];
+    let currentGroup = null;
+
+    messages.forEach((msg) => {
+      const isMe = String(msg.senderId) === String(user?._id);
+      const senderKey = isMe ? "me" : String(msg.senderId || "other");
+
+      if (!currentGroup || currentGroup.senderKey !== senderKey) {
+        currentGroup = {
+          senderKey,
+          isMe,
+          messages: [msg],
+        };
+        groups.push(currentGroup);
+      } else {
+        currentGroup.messages.push(msg);
+      }
+    });
+
+    return groups;
+  }, [messages, user?._id]);
 
   const updateMessageCache = (updater) => {
     queryClient.setQueryData(["messages", id], (old) => {
@@ -359,82 +392,114 @@ export default function Chat() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
+        <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
           {!isLoading && messages.length === 0 && (
             <div className="text-center text-muted-foreground mt-4 mb-auto">
               Say hi to start the conversation!
             </div>
           )}
           {!isLoading &&
-            messages.length > 0 &&
-            messages.map((msg, index) => {
-              const isMe = String(msg.senderId) === String(user?._id);
-              const messageDate = new Date(msg.createdAt);
-              const formattedDate = messageDate.toLocaleDateString("en-GB", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              });
-              const formattedTime = messageDate.toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              });
-              const messageStatus = msg.status || (msg.tempId ? "sending" : "sent");
+            messageGroups.length > 0 &&
+            messageGroups.map((group, groupIdx) => (
+              <MessageGroup key={groupIdx}>
+                {group.messages.map((msg, msgIdx) => {
+                  const isMe = group.isMe;
+                  const isLastInGroup = msgIdx === group.messages.length - 1;
+                  const messageDate = new Date(msg.createdAt);
+                  const formattedTime = !isNaN(messageDate.getTime())
+                    ? messageDate.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                    : "";
+                  const messageStatus = msg.status || (msg.tempId ? "sending" : "sent");
 
-              return (
-                <div
-                  key={msg._id || msg.tempId || index}
-                  className={`flex flex-col mb-1 ${isMe ? "items-end" : "items-start"}`}
-                >
-                  <div
-                    className={`max-w-[75%] rounded-lg p-3 flex flex-col ${isMe ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}
-                  >
-                    {msg.image && (
-                      <img
-                        src={msg.image}
-                        alt="attachment"
-                        className={`max-h-50 max-w-50 object-cover rounded-md ${msg.text ? "mb-2" : ""}`}
-                      />
-                    )}
-                    {msg.text && <div>{msg.text}</div>}
-                  </div>
-                  <div className={`mt-1 flex items-center gap-1 text-[10px] ${isMe ? "mr-1 justify-end" : "ml-1 justify-start"}`}>
-                    <span className="text-muted-foreground">
-                      {formattedDate} {formattedTime}
-                    </span>
-                    {isMe && messageStatus === "sending" && (
-                      <span className="flex items-center gap-1 text-muted-foreground">
-                        <Clock3 className="size-3 animate-pulse" /> sending
-                      </span>
-                    )}
-                    {isMe && messageStatus === "sent" && (
-                      <span className="flex items-center gap-1 text-muted-foreground">
-                        <Check className="size-3" />
-                      </span>
-                    )}
-                    {isMe && messageStatus === "delivered" && (
-                      <span className="flex items-center gap-1 text-muted-foreground">
-                        <CheckCheck className="size-3" />
-                      </span>
-                    )}
-                    {isMe && messageStatus === "seen" && (
-                      <span className="flex items-center gap-1 text-emerald-500">
-                        <CheckCheck className="size-3" />
-                      </span>
-                    )}
-                    {isMe && messageStatus === "failed" && (
-                      <button
-                        type="button"
-                        onClick={() => handleRetry(msg.tempId)}
-                        className="flex items-center gap-1 text-red-500 hover:underline"
-                      >
-                        <CircleAlert className="size-3" /> failed - retry
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+                  const senderProfilePicture = isMe
+                    ? (user?.profilePicture || "")
+                    : (profilePicture || "");
+                  const senderFallback = isMe
+                    ? (user?.fullName || "U").charAt(0).toUpperCase()
+                    : avatarFallback;
+                  const senderName = isMe ? (user?.fullName || "Me") : chatUserName;
+
+                  return (
+                    <Message
+                      key={msg._id || msg.tempId || `${groupIdx}-${msgIdx}`}
+                      align={isMe ? "end" : "start"}
+                    >
+                      {isLastInGroup ? (
+                        <MessageAvatar>
+                          <Avatar className="size-8 border">
+                            <AvatarImage src={senderProfilePicture} alt={senderName} />
+                            <AvatarFallback>{senderFallback}</AvatarFallback>
+                          </Avatar>
+                        </MessageAvatar>
+                      ) : (
+                        <div className="w-8 shrink-0" aria-hidden="true" />
+                      )}
+
+                      <MessageContent>
+                        {msg.image && (
+                          <Attachment
+                            orientation="vertical"
+                            className="w-fit max-w-[220px] overflow-hidden rounded-xl border p-1 bg-card"
+                          >
+                            <AttachmentMedia
+                              variant="image"
+                              className="w-auto max-w-[210px] overflow-hidden rounded-lg"
+                            >
+                              <img
+                                src={msg.image}
+                                alt="attachment"
+                                className="block max-w-[210px] max-h-[180px] w-auto h-auto rounded-lg object-contain"
+                              />
+                            </AttachmentMedia>
+                          </Attachment>
+                        )}
+                        {msg.text && (
+                          <Bubble variant={isMe ? "default" : "muted"}>
+                            <BubbleContent>{msg.text}</BubbleContent>
+                          </Bubble>
+                        )}
+
+                        <MessageFooter>
+                          <span>{formattedTime}</span>
+                          {isMe && messageStatus === "sending" && (
+                            <span className="flex items-center gap-1 text-muted-foreground ml-1">
+                              <Clock3 className="size-3 animate-pulse" /> sending
+                            </span>
+                          )}
+                          {isMe && messageStatus === "sent" && (
+                            <span className="flex items-center text-muted-foreground ml-1">
+                              <Check className="size-3" />
+                            </span>
+                          )}
+                          {isMe && messageStatus === "delivered" && (
+                            <span className="flex items-center text-muted-foreground ml-1">
+                              <CheckCheck className="size-3" />
+                            </span>
+                          )}
+                          {isMe && messageStatus === "seen" && (
+                            <span className="flex items-center text-emerald-500 ml-1">
+                              <CheckCheck className="size-3" />
+                            </span>
+                          )}
+                          {isMe && messageStatus === "failed" && (
+                            <button
+                              type="button"
+                              onClick={() => handleRetry(msg.tempId)}
+                              className="flex items-center gap-1 text-destructive hover:underline ml-1 cursor-pointer"
+                            >
+                              <CircleAlert className="size-3" /> failed - retry
+                            </button>
+                          )}
+                        </MessageFooter>
+                      </MessageContent>
+                    </Message>
+                  );
+                })}
+              </MessageGroup>
+            ))}
           <div ref={messagesEndRef} />
         </div>
 
