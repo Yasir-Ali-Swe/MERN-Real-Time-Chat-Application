@@ -45,11 +45,6 @@ const ResetPasswordUi = ({ token }) => {
 
     const { password, confirmPassword } = formData;
 
-    // if (password.length < 6) {
-    //   toast.error("Password must be at least 8 characters");
-    //   return;
-    // }
-
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
       return;
@@ -119,7 +114,7 @@ const ResetPasswordUi = ({ token }) => {
 
         <CardFooter className="flex justify-center">
           <p className="text-primary font-medium">
-            © All rights reserved to NexTalk
+            &copy; {new Date().getFullYear()} All rights reserved to NexTalk.
           </p>
         </CardFooter>
       </Card>
