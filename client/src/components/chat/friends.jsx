@@ -1,12 +1,16 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Friends = ({ id, name, profilePicture }) => {
+  const { id: activeId } = useParams();
+  const isSelected = activeId === String(id);
+
   return (
     <Link
       to={`/friends/${id}`}
-      className="py-2 border-b hover:bg-accent cursor-pointer block"
+      className={`py-2 border-b hover:bg-accent cursor-pointer block ${isSelected ? "bg-card" : ""
+        }`}
     >
       <div className="flex items-center gap-2 px-2">
         <Avatar className="w-8 h-8 border">
@@ -19,4 +23,4 @@ const Friends = ({ id, name, profilePicture }) => {
   );
 };
 
-export default Friends;
+export default React.memo(Friends);
