@@ -340,7 +340,7 @@ export default function Chat() {
   return (
     <>
       {isLoading && <FullScreenLoader message="Loading messages..." />}
-      <div className="flex h-full w-full flex-col bg-background border">
+      <div className="flex h-full w-full flex-col bg-background border rounded-lg">
         <div className="flex h-14 shrink-0 items-center border-b px-4 lg:hidden">
           <Button
             variant="ghost"
