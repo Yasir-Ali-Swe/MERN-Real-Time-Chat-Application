@@ -4,6 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { getUserConversations } from "@/lib/chat-api";
 import FullScreenLoader from "@/components/ui/full-screen-loader";
 import { useSocket } from "@/context/SocketContext";
+import { SquareUser } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const ConversationList = () => {
   const { onlineUsers, typingUsers } = useSocket();
@@ -18,14 +21,21 @@ const ConversationList = () => {
     <>
       {isLoading && <FullScreenLoader message="Loading conversations..." />}
       <div className="h-full w-full">
-        <h1 className="text-xl font-semibold m-2">Conversations</h1>
+        <div className="flex items-center justify-between p-2 border-b">
+          <h1 className="text-xl font-semibold">Conversations</h1>
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/friends">
+              <SquareUser className="size-4" />
+            </Link>
+          </Button>
+        </div>
 
         {isError ? (
           <div className="text-center text-red-500 mt-4">
             Failed to load conversations.
           </div>
         ) : (
-          <div className="flex flex-col gap-2 p-2">
+          <div className="flex flex-col">
             {!isLoading &&
               conversations.map((conv) => {
                 const otherParticipant = conv.participants[0] || {};
