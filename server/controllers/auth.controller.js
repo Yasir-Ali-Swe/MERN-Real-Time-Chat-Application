@@ -119,6 +119,11 @@ export const login = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid email or password" });
     }
+    if (!user.isVerified) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email is not verified" });
+    }
     const accessToken = generateToken(user._id, "1h", user.tokenVersion);
     const refreshToken = generateToken(user._id, "7d", user.tokenVersion);
     res.cookie("refreshToken", refreshToken, getCookieOptions());
