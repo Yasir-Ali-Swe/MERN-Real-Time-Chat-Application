@@ -20,7 +20,7 @@ const ConversationList = () => {
   return (
     <>
       {isLoading && <FullScreenLoader message="Loading conversations..." />}
-      <div className="h-full w-full">
+      <div className="h-full w-full rounded-lg">
         <div className="flex items-center justify-between p-2 border-b">
           <h1 className="text-xl font-semibold">Conversations</h1>
           <Button variant="ghost" size="icon" asChild>
