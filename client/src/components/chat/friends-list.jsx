@@ -17,7 +17,7 @@ const FriendsList = () => {
   return (
     <>
       {isLoading && <FullScreenLoader message="Loading friends..." />}
-      <div className="h-full w-full">
+      <div className="h-full w-full rounded-lg">
         <div className="flex items-center justify-between p-2 border-b">
           <h1 className="text-xl font-semibold">Friends</h1>
           <Button variant="ghost" size="icon" asChild>
