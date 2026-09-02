@@ -5,8 +5,6 @@ import streamifier from "streamifier";
 export const getUsers = async (req, res) => {
     try {
         const currentUserId = req.user._id;
-
-        // Fetch all users except the current one, and exclude passwords.
         const users = await User.find({ _id: { $ne: currentUserId } }).select("-password");
 
         res.status(200).json({
@@ -27,8 +25,6 @@ export const updateProfile = async (req, res) => {
         const userId = req.user._id;
         const { fullName, email } = req.body;
         let imageUrl = undefined;
-
-        // Validate email format basic
         if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             return res.status(400).json({ success: false, message: "Invalid email format" });
         }
