@@ -306,6 +306,7 @@ export const logout = async (req, res) => {
         }
       } catch (err) {
         // Continue to clear cookie even if token was already expired/revoked
+        console.log("Error in logout clear cookie" + err);
       }
     }
     res.clearCookie("refreshToken", getClearCookieOptions());
