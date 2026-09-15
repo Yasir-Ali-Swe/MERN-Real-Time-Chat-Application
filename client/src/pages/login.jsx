@@ -60,7 +60,7 @@ const Login = () => {
         <h1 className="text-3xl font-bold">NexTalk</h1>
         <MessageCircleMore className="size-9" />
       </div>
-      <Card className={"w-full max-w-xs md:max-w-sm lg:max-w-md rounded-xs"}>
+      <Card className={"w-full max-w-xs md:max-w-sm lg:max-w-md"}>
         <CardHeader>
           <CardTitle className={"text-xl"}>Login</CardTitle>
           <CardDescription>Enter your credentials to login</CardDescription>
@@ -76,7 +76,6 @@ const Login = () => {
                 name="email"
                 type="email"
                 placeholder="Enter your email"
-                className={"rounded-xs"}
                 value={formData.email}
                 onChange={handleChange}
               />
@@ -96,7 +95,6 @@ const Login = () => {
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 value={formData.password}
-                className={"rounded-xs"}
                 onChange={handleChange}
               />
               <div className="absolute right-3 top-9">
@@ -123,7 +121,7 @@ const Login = () => {
             </div>
             <Button
               type="submit"
-              className={"w-full my-3 rounded-xs cursor-pointer"}
+              className={"w-full my-3 cursor-pointer"}
             >
               {isPending ? (
                 <Loader className="size-3 animate-spin text-white" />
