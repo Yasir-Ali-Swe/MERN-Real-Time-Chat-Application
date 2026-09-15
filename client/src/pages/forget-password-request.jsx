@@ -48,7 +48,7 @@ const forgetPasswordRequest = () => {
         <h1 className="text-3xl font-bold">NexTalk</h1>
         <MessageCircleMore className="size-9" />
       </div>
-      <Card className={"w-full max-w-xs md:max-w-sm lg:max-w-md rounded-xs"}>
+      <Card className={"w-full max-w-xs md:max-w-sm lg:max-w-md"}>
         <CardHeader>
           <CardTitle className={"text-xl"}>Forget Password Request</CardTitle>
           <CardDescription>
@@ -66,7 +66,6 @@ const forgetPasswordRequest = () => {
                 name="email"
                 type="email"
                 placeholder="Enter your email"
-                className={"rounded-xs"}
                 value={formData.email}
                 onChange={handleChange}
               />
@@ -86,7 +85,7 @@ const forgetPasswordRequest = () => {
             </div>
             <Button
               type="submit"
-              className={"w-full my-3 rounded-xs cursor-pointer"}
+              className={"w-full my-3 cursor-pointer"}
             >
               {isPending ? (
                 <Loader className="size-5 animate-spin text-white" />
