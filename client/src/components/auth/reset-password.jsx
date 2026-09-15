@@ -60,7 +60,7 @@ const ResetPasswordUi = ({ token }) => {
         <MessageCircleMore className="size-9" />
       </div>
 
-      <Card className="w-full max-w-xs md:max-w-sm lg:max-w-md rounded-xs">
+      <Card className="w-full max-w-xs md:max-w-sm lg:max-w-md">
         <CardHeader>
           <CardTitle className="text-xl">Reset Password</CardTitle>
           <CardDescription>Please enter your new password</CardDescription>
@@ -100,7 +100,7 @@ const ResetPasswordUi = ({ token }) => {
 
             <Button
               type="submit"
-              className="w-full my-3 rounded-xs"
+              className="w-full my-3"
               disabled={isPending}
             >
               {isPending ? (
